@@ -24,7 +24,7 @@ function drawGrid() {
 
   rastros.forEach((ponto, i) => {
     if (i === 0) return;
-    ctx.strokeStyle = "#74e36a";
+    ctx.strokeStyle = "#2affb7"; // Verde neon para o rastro
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(rastros[i - 1].x * cellSize + cellSize / 2, rastros[i - 1].y * cellSize + cellSize / 2);
@@ -35,23 +35,23 @@ function drawGrid() {
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
       if (visited[y][x]) {
-        ctx.fillStyle = "#b2fab4";
+        ctx.fillStyle = "#0e5a40"; // Verde escuro sutil para células visitadas
         ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
       } else {
-        ctx.strokeStyle = "#ccc";
+        ctx.strokeStyle = "#2f343a"; // Borda da célula cinza escuro
         ctx.strokeRect(x * cellSize, y * cellSize, cellSize, cellSize);
       }
     }
   }
 
   pessoas.forEach(p => {
-    ctx.fillStyle = "red";
+    ctx.fillStyle = "#ff4757"; // Vermelho mais vibrante para pessoas
     ctx.beginPath();
     ctx.arc(p.x * cellSize + cellSize / 2, p.y * cellSize + cellSize / 2, cellSize / 4, 0, Math.PI * 2);
     ctx.fill();
   });
 
-  ctx.fillStyle = "gray";
+  ctx.fillStyle = "#c9d1d9"; // Cinza claro para o drone (ou "#58a6ff" para destaque)
   ctx.beginPath();
   ctx.arc(drone.x * cellSize + cellSize / 2, drone.y * cellSize + cellSize / 2, cellSize / 3, 0, Math.PI * 2);
   ctx.fill();
