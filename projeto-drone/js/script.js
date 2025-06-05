@@ -6,7 +6,7 @@ const cellSize = canvas.width / cols;
 let grid = [], visited = [], pessoas = [], drone = { x: 0, y: 0 };
 let rastros = [];
 let isSimulationRunning = false;
-let hasSimulationStartedOnce = false;
+let hasBFSCompleted = false;
 
 const startBtn = document.getElementById("startBtn");
 const rescueBtn = document.getElementById("rescueBtn");
@@ -24,7 +24,7 @@ function resetGrid() {
   }
   drone = { x: 0, y: 0 };
   isSimulationRunning = false;
-  hasSimulationStartedOnce = false;
+  hasBFSCompleted = false;
   updateButtonStates();
 }
 
@@ -34,9 +34,9 @@ function updateButtonStates() {
     rescueBtn.disabled = true;
     resetBtn.disabled = false;
   } else {
-    startBtn.disabled = hasSimulationStartedOnce;
-    rescueBtn.disabled = true;
+    startBtn.disabled = hasBFSCompleted;
     resetBtn.disabled = false;
+    rescueBtn.disabled = !hasBFSCompleted;
   }
 }
 
@@ -82,7 +82,7 @@ function drawGrid() {
 
 async function bfs() {
   isSimulationRunning = true;
-  hasSimulationStartedOnce = true;
+  hasBFSCompleted = false;
   updateButtonStates();
 
   const queue = [[drone.x, drone.y]];
@@ -108,7 +108,7 @@ async function bfs() {
   }
 
   if (isSimulationRunning) {
-    rescueBtn.disabled = false;
+    hasBFSCompleted = true;
   }
   isSimulationRunning = false;
   updateButtonStates();
@@ -264,7 +264,7 @@ rescueBtn.onclick = () => {
 
 resetBtn.onclick = () => {
   isSimulationRunning = false;
-  hasSimulationStartedOnce = false;
+  hasBFSCompleted = false;
   resetGrid();
   drawGrid();
   updateButtonStates();
