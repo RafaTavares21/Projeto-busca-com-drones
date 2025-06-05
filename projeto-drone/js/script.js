@@ -6,6 +6,7 @@ const cellSize = canvas.width / cols;
 let grid = [], visited = [], pessoas = [], drone = { x: 0, y: 0 };
 let rastros = [];
 let isSimulationRunning = false;
+let hasSimulationStartedOnce = false;
 
 const startBtn = document.getElementById("startBtn");
 const rescueBtn = document.getElementById("rescueBtn");
@@ -23,6 +24,7 @@ function resetGrid() {
   }
   drone = { x: 0, y: 0 };
   isSimulationRunning = false;
+  hasSimulationStartedOnce = false;
   updateButtonStates();
 }
 
@@ -32,7 +34,7 @@ function updateButtonStates() {
     rescueBtn.disabled = true;
     resetBtn.disabled = false;
   } else {
-    startBtn.disabled = false;
+    startBtn.disabled = hasSimulationStartedOnce;
     rescueBtn.disabled = true;
     resetBtn.disabled = false;
   }
@@ -80,6 +82,7 @@ function drawGrid() {
 
 async function bfs() {
   isSimulationRunning = true;
+  hasSimulationStartedOnce = true;
   updateButtonStates();
 
   const queue = [[drone.x, drone.y]];
@@ -103,6 +106,7 @@ async function bfs() {
       }
     }
   }
+
   if (isSimulationRunning) {
     rescueBtn.disabled = false;
   }
@@ -160,8 +164,6 @@ function dijkstra(start, end) {
 }
 
 async function resgatar() {
-  document.getElementById("rescueBtn").disabled = true;
-
   isSimulationRunning = true;
   updateButtonStates();
 
@@ -175,7 +177,7 @@ async function resgatar() {
       }
       drone.x = pos.x;
       drone.y = pos.y;
-      rastros.push({ x, y });
+      rastros.push({ x: pos.x, y: pos.y });
       drawGrid();
       await new Promise(res => setTimeout(res, 50));
     }
@@ -262,6 +264,7 @@ rescueBtn.onclick = () => {
 
 resetBtn.onclick = () => {
   isSimulationRunning = false;
+  hasSimulationStartedOnce = false;
   resetGrid();
   drawGrid();
   updateButtonStates();
