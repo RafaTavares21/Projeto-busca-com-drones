@@ -1,21 +1,92 @@
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Poppins', sans-serif; /* Fonte mais moderna e limpa, ideal para tech */
   text-align: center;
-  background-color: #f0f0f0;
+  background-color: #0d1117; /* Fundo muito escuro, quase preto, comum em GUIs tecnológicas */
+  color: #c9d1d9; /* Cor de texto padrão, um cinza claro */
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  box-sizing: border-box;
+  overflow-x: hidden; /* Evita scroll horizontal indesejado */
+}
+
+h1 {
+  color: #58a6ff; /* Um azul vibrante e tecnológico para o título */
+  font-size: 2.8em; /* Aumenta um pouco o tamanho */
+  margin-bottom: 30px;
+  text-shadow: 0 0 15px rgba(88, 166, 255, 0.6), 0 0 5px rgba(88, 166, 255, 0.4); /* Efeito neon azul */
+  letter-spacing: 2px;
+  font-weight: 600; /* Seminegrito para o título */
 }
 
 canvas {
-  background-color: white;
-  border: 1px solid black;
+  background-color: #161b22; /* Fundo do canvas um pouco mais claro que o body */
+  border: 2px solid #58a6ff; /* Borda com a cor de destaque azul */
+  box-shadow: 0 0 25px rgba(88, 166, 255, 0.4), 0 0 10px rgba(88, 166, 255, 0.2) inset; /* Sombra e brilho internos/externos */
   margin-top: 20px;
+  border-radius: 10px; /* Cantos levemente mais arredondados */
+  transition: all 0.3s ease; /* Transição para possíveis interações futuras */
+}
+
+canvas:hover {
+  box-shadow: 0 0 35px rgba(88, 166, 255, 0.6), 0 0 15px rgba(88, 166, 255, 0.3) inset;
 }
 
 #controls {
-  margin-top: 20px;
+  margin-top: 40px;
+  background-color: #161b22;
+  padding: 25px 40px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(88, 166, 255, 0.3);
+  display: flex;
+  gap: 25px; /* Aumenta o espaçamento entre os botões */
+  border: 1px solid #2f343a; /* Borda sutil para separar do fundo */
 }
 
 button {
-  margin: 0 10px;
-  padding: 10px 20px;
-  font-size: 16px;
+  background-color: #21262d; /* Fundo dos botões um cinza escuro */
+  color: #58a6ff; /* Texto azul de destaque nos botões */
+  padding: 14px 30px; /* Aumenta o padding */
+  font-size: 1.15em; /* Aumenta levemente a fonte */
+  border: 1px solid #30363d; /* Borda sutil para dar um efeito de botão */
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease, color 0.3s ease;
+  font-weight: 500; /* Peso da fonte médio */
+  letter-spacing: 0.7px;
+  text-transform: uppercase; /* Texto dos botões em maiúsculas */
+  outline: none; /* Remove o contorno padrão do foco */
 }
+
+button:hover {
+  background-color: #58a6ff; /* Fundo azul ao passar o mouse */
+  color: #0d1117; /* Texto escuro ao passar o mouse */
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(88, 166, 255, 0.7);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 10px rgba(88, 166, 255, 0.5);
+}
+
+button:disabled {
+  background-color: #2f343a; /* Fundo cinza escuro para desabilitado */
+  color: #6a737d; /* Texto cinza para desabilitado */
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+  opacity: 0.7; /* Suaviza a aparência do botão desabilitado */
+  border-color: #2f343a;
+}
+
+/* Cores dos elementos internos do Canvas (JavaScript) - Ajustadas para a nova paleta */
+/* As cores dos rastros, visited, pessoas e drone devem ser consistentes com a paleta CSS. */
+/* Sugestão de ajuste no JS: */
+/* rastros.forEach cor: "#2affb7" (verde neon) */
+/* visited.forEach cor: "#0e5a40" (verde escuro sutil) */
+/* pessoas.forEach cor: "#ff4757" (vermelho mais vibrante) */
+/* drone.forEach cor: "#c9d1d9" (cinza claro, ou #58a6ff para destaque) */
