@@ -24,7 +24,7 @@ function drawGrid() {
 
   rastros.forEach((ponto, i) => {
     if (i === 0) return;
-    ctx.strokeStyle = "#2affb7"; // Verde neon para o rastro
+    ctx.strokeStyle = "#00e5ff"; 
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(rastros[i - 1].x * cellSize + cellSize / 2, rastros[i - 1].y * cellSize + cellSize / 2);
@@ -35,23 +35,25 @@ function drawGrid() {
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
       if (visited[y][x]) {
-        ctx.fillStyle = "#0e5a40"; // Verde escuro sutil para células visitadas
+        ctx.fillStyle = "#007bff"; 
         ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
       } else {
-        ctx.strokeStyle = "#2f343a"; // Borda da célula cinza escuro
+        ctx.strokeStyle = "#2f343a"; 
         ctx.strokeRect(x * cellSize, y * cellSize, cellSize, cellSize);
       }
     }
   }
 
   pessoas.forEach(p => {
-    ctx.fillStyle = "#ff4757"; // Vermelho mais vibrante para pessoas
-    ctx.beginPath();
-    ctx.arc(p.x * cellSize + cellSize / 2, p.y * cellSize + cellSize / 2, cellSize / 4, 0, Math.PI * 2);
-    ctx.fill();
+    if (visited[p.y][p.x]) { 
+      ctx.fillStyle = "#ff4757"; 
+      ctx.beginPath();
+      ctx.arc(p.x * cellSize + cellSize / 2, p.y * cellSize + cellSize / 2, cellSize / 4, 0, Math.PI * 2);
+      ctx.fill();
+    }
   });
 
-  ctx.fillStyle = "#c9d1d9"; // Cinza claro para o drone (ou "#58a6ff" para destaque)
+  ctx.fillStyle = "#c9d1d9"; 
   ctx.beginPath();
   ctx.arc(drone.x * cellSize + cellSize / 2, drone.y * cellSize + cellSize / 2, cellSize / 3, 0, Math.PI * 2);
   ctx.fill();
@@ -131,22 +133,13 @@ function dijkstra(start, end) {
 }
 
 async function resgatar() {
-  const voltarInicio = dijkstra(drone, { x: 0, y: 0 });
-  for (const pos of voltarInicio) {
-    drone.x = pos.x;
-    drone.y = pos.y;
-    rastros.push({ x: pos.x, y: pos.y });
-    drawGrid();
-    await new Promise(res => setTimeout(res, 50));
-  }
+ 
+  document.getElementById("rescueBtn").disabled = true;
 
-  let base = { x: 0, y: 0 };
-  const restantes = [...pessoas];
-  while (restantes.length > 0) {
-    restantes.sort((a, b) => Math.abs(a.x - base.x) + Math.abs(a.y - base.y) - (Math.abs(b.x - base.x) + Math.abs(b.y - base.y)));
-    const alvo = restantes.shift();
-    const caminho = dijkstra(drone, alvo);
-    for (const pos of caminho) {
+ 
+  if (drone.x !== 0 || drone.y !== 0) {
+    const voltarInicio = dijkstra(drone, { x: 0, y: 0 });
+    for (const pos of voltarInicio) {
       drone.x = pos.x;
       drone.y = pos.y;
       rastros.push({ x: pos.x, y: pos.y });
@@ -155,15 +148,61 @@ async function resgatar() {
     }
   }
 
-  const volta = dijkstra(drone, { x: 0, y: 0 });
-  for (const pos of volta) {
-    drone.x = pos.x;
-    drone.y = pos.y;
-    rastros.push({ x: pos.x, y: pos.y });
+  let base = { x: 0, y: 0 };
+  const restantes = [...pessoas]; 
+
+
+  const pessoasComDistancia = restantes.map(p => ({
+    ...p,
+    distToBase: dijkstra(p, base).length - 1 
+  }));
+
+  
+  pessoasComDistancia.sort((a, b) => a.distToBase - b.distToBase);
+
+  while (pessoasComDistancia.length > 0) {
+    const alvo = pessoasComDistancia.shift(); 
+    const caminhoParaAlvo = dijkstra(drone, alvo);
+    for (const pos of caminhoParaAlvo) {
+      drone.x = pos.x;
+      drone.y = pos.y;
+      rastros.push({ x: pos.x, y: pos.y });
+      drawGrid();
+      await new Promise(res => setTimeout(res, 50));
+    }
+    
+
+    pessoas = pessoas.filter(p => p.x !== alvo.x || p.y !== alvo.y);
     drawGrid();
     await new Promise(res => setTimeout(res, 50));
+
+   
+    const voltaParaBase = dijkstra(drone, { x: 0, y: 0 });
+    for (const pos of voltaParaBase) {
+        drone.x = pos.x;
+        drone.y = pos.y;
+        rastros.push({ x: pos.x, y: pos.y });
+        drawGrid();
+        await new Promise(res => setTimeout(res, 50));
+    }
   }
+
+ 
+  if (drone.x !== 0 || drone.y !== 0) {
+    const voltaFinal = dijkstra(drone, { x: 0, y: 0 });
+    for (const pos of voltaFinal) {
+        drone.x = pos.x;
+        drone.y = pos.y;
+        rastros.push({ x: pos.x, y: pos.y });
+        drawGrid();
+        await new Promise(res => setTimeout(res, 50));
+    }
+  }
+  
+  
+  document.getElementById("rescueBtn").disabled = false;
 }
+
 
 document.getElementById("startBtn").onclick = () => {
   resetGrid();
