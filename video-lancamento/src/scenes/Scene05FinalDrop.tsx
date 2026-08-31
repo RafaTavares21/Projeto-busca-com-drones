@@ -24,7 +24,7 @@ const B = BEATS.finalDrop;
  */
 export const Scene05FinalDrop: React.FC = () => {
   const frame = useCurrentFrame();
-  const print = useAsset('productFront');
+  const print = useAsset('printMark');
 
   // Clarao unico e curtissimo. Repeti-lo o transformaria em glitch.
   const flash = pulse(frame, B.redFlash[0], B.redFlash[1], 0.3);

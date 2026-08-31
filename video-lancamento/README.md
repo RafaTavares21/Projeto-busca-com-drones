@@ -45,9 +45,11 @@ Os arquivos originais ficam intactos em `public/assets/source/`. O comando
 
 | papel | arquivo | o que é | função na narrativa |
 |---|---|---|---|
-| `productFront` | `print-front.png` | arte da estampa, recortada | a identidade gráfica — abre a cena 02, assina a cena 05 |
-| `productBack` | `product-back.jpg` | fotografia da peça vestida | o produto — o caimento, o corpo, o mundo |
-| `hands` | `hands.png` | as mãos vermelhas, recortadas | gesto de impacto, máscara e transição |
+| `productFront` | `shirt-front.png` | a peça, frente | abre o reveal da cena 02 |
+| `productBack` | `shirt-back.png` | a peça, costas | revelada atrás da mão, no pico do gesto |
+| `productWorn` | `product-back.jpg` | a peça vestida | o caimento e o corpo, na cena de detalhes |
+| `printMark` | `print-front.png` | a estampa isolada | assina o último frame |
+| `hands` | `hands.png` | as mãos vermelhas | gesto de impacto, máscara e transição |
 
 ### Trocar a peça do próximo drop
 
@@ -56,9 +58,11 @@ pelo **papel que cumprem na narrativa**, nunca pelo nome do arquivo:
 
 ```ts
 export const ASSETS = {
-  productFront: { src: 'assets/print-front.png', kind: 'art' },
-  productBack:  { src: 'assets/product-back.jpg', kind: 'photo' },
-  hands:        { src: 'assets/hands.png',        kind: 'art' },
+  productFront: { src: 'assets/shirt-front.png',  kind: 'photo' },
+  productBack:  { src: 'assets/shirt-back.png',   kind: 'photo' },
+  productWorn:  { src: 'assets/product-back.jpg', kind: 'photo' },
+  printMark:    { src: 'assets/print-front.png',  kind: 'art'   },
+  hands:        { src: 'assets/hands.png',        kind: 'art'   },
 };
 ```
 
@@ -71,14 +75,24 @@ luz já está gravada na imagem, e iluminá-la de novo somaria duas iluminaçõe
 destruiria a fotografia. `art` recebe a luz da cena, porque é justamente a luz
 que dá volume a uma arte chapada.
 
-### Recorte de fundo
+### Duas formas de preparar um asset
 
-As artes chegam como JPEG sobre preto chapado, sem canal alfa. O
-`scripts/prepare-assets.mjs` chaveia o fundo e grava PNGs com alfa real,
-cortando a moldura vazia para que a arte seja posicionada pela própria
+`scripts/prepare-assets.mjs` trata cada tipo de arquivo pelo que ele é.
+
+**Artes chapadas** (`print-front`, `hands`) chegam como JPEG sobre preto, sem
+canal alfa. São **chaveadas**: o script recorta o fundo e grava PNGs com alfa
+real, cortando a moldura vazia para que a arte seja posicionada pela própria
 proporção. O corte usa o **canal mais forte** do pixel, não a luminância
-perceptual: as mãos são vermelho saturado, que tem luminância baixa e seria
+perceptual — as mãos são vermelho saturado, que tem luminância baixa e seria
 comido por um corte perceptual.
+
+**As peças** (`shirt-front`, `shirt-back`) foram fotografadas apoiadas sobre o
+modelo, então um recorte retangular traz junto jeans, degraus e a mão dele.
+Chavear não resolve: a peça é preta, parte do fundo também é, e a estampa é
+branca — não existe limiar que separe os três. A solução é óptica em vez de
+geométrica: uma **queda suave de alfa nas bordas** faz o contexto se dissolver
+no preto do filme, e o que sobra é a peça. Numa composição de fundo preto isso
+lê como iluminação, não como recorte.
 
 ---
 
@@ -136,11 +150,16 @@ Na cena 01 a mão rasga o quadro e **carrega a câmera junto** — o chicote de
 câmera é consequência do gesto, não um efeito somado por cima.
 
 Na cena 02 ela atravessa o quadro em primeiro plano e, no frame de maior
-cobertura, a cena troca **atrás dela**: quando a mão sai, a estampa virou a
-fotografia da peça vestida. É o mesmo recurso de um corte escondido atrás de um
-objeto que passa. A diferença importa: um fade informa que houve uma transição;
-um objeto que passa faz a transição desaparecer, e a marca acaba assinando o
-próprio corte.
+cobertura, a peça gira **atrás dela**: quando a mão sai, o que está em cena são
+as costas. É o mesmo recurso de um corte escondido atrás de um objeto que passa.
+A diferença importa: um fade informa que houve uma transição; um objeto que
+passa faz a transição desaparecer — e, como o objeto é a mão da própria
+estampa, a marca acaba assinando o próprio corte.
+
+As duas faces são placas de mesma proporção e compartilham escala,
+enquadramento e deriva, e a câmera continua avançando através do corte. É isso
+que faz as duas lerem como a **mesma peça girando**, e não como duas imagens
+diferentes cortadas uma na outra.
 
 Não há máscara por stencil nem shader. Cobertura física é mais simples, mais
 barata e — porque a mão tem a silhueta irregular de uma mão real — mais bonita
@@ -157,7 +176,7 @@ como o mesmo sistema. Sem ela seriam duas legendas soltas.
 | # | Cena | Tempo | Conteúdo |
 |---|------|-------|----------|
 | 01 | IMPACT | 0 – 2.5 s | Silêncio, a mão rasga o quadro, EOG chega, DRIP passa rente à lente |
-| 02 | PRODUCT REVEAL | 2.5 – 6 s | Estampa distante → mão atravessa → fotografia da peça vestida |
+| 02 | PRODUCT REVEAL | 2.5 – 6 s | A peça de frente → mão atravessa → as costas, no pico do gesto |
 | 03 | DETAILS | 6 – 9 s | Ficha técnica em tipografia editorial no espaço negativo |
 | 04 | EOG DRIP | 9 – 12 s | Colisão em profundidades opostas + assinatura |
 | 05 | FINAL DROP | 12 – 15 s | Flash vermelho, silêncio, lockup, DROP 01 / COMING SOON |

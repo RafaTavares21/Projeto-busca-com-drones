@@ -15,6 +15,15 @@ type Props = {
    * imagem sem re-iluminar nada; em arte chapada, para tirar peso do branco.
    */
   exposure?: number;
+  /**
+   * Dominante de cor aplicada sobre a imagem.
+   *
+   * E assim que a luz da cena alcanca uma fotografia. Um `MeshBasicMaterial`
+   * ignora luzes de proposito — a luz de uma foto ja esta gravada nela, e
+   * somar um rig em cima produziria duas iluminacoes. Modular exposicao e
+   * dominante imita a luz PASSANDO pela peca sem reacender a fotografia.
+   */
+  tint?: string;
   /** Copias fantasma para simular borrao nos movimentos rapidos. */
   ghosts?: number;
   ghostOffset?: [number, number, number];
@@ -43,6 +52,7 @@ export const ProductPlate: React.FC<Props> = ({
   scale = 1,
   opacity = 1,
   exposure = 1,
+  tint,
   ghosts = 0,
   ghostOffset = [0, 0, 0],
   ghostOpacity = 0.14,
@@ -51,21 +61,26 @@ export const ProductPlate: React.FC<Props> = ({
   const width = height * asset.aspect;
 
   const material = useMemo(() => {
-    const tint = new THREE.Color(exposure, exposure, exposure);
+    const shade = new THREE.Color(tint ?? '#FFFFFF').multiplyScalar(exposure);
 
     if (asset.kind === 'photo') {
       return new THREE.MeshBasicMaterial({
         map: asset.texture,
-        color: tint,
-        transparent: opacity < 1,
+        color: shade,
+        // Sempre transparente, mesmo com opacidade cheia: as placas trazem uma
+        // queda de alfa nas bordas para se dissolverem no preto, e um material
+        // opaco descarta o canal alfa da textura — a placa apareceria como um
+        // retangulo fotografico recortado a faca.
+        transparent: true,
         opacity,
+        depthWrite: opacity > 0.99,
         toneMapped: true,
       });
     }
 
     return new THREE.MeshStandardMaterial({
       map: asset.texture,
-      color: tint,
+      color: shade,
       transparent: true,
       opacity,
       roughness: 0.62,
@@ -73,7 +88,7 @@ export const ProductPlate: React.FC<Props> = ({
       envMapIntensity: 0.7,
       side: THREE.DoubleSide,
     });
-  }, [asset, opacity, exposure]);
+  }, [asset, opacity, exposure, tint]);
 
   const ghostMaterial = useMemo(() => {
     if (ghosts <= 0) return null;

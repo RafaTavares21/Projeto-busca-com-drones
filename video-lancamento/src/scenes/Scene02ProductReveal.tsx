@@ -12,7 +12,7 @@ import { Stage } from '../three/Stage';
 import { BASE_Z } from '../three/stageConfig';
 import { useAsset } from '../assets';
 import { EASE } from '../animations/easings';
-import { inOut, progress, range, rad } from '../animations/interpolate';
+import { inOut, progress, rad, range } from '../animations/interpolate';
 import { springAt } from '../animations/springs';
 import { COLORS } from '../styles/tokens';
 import { BEATS, HEIGHT } from '../timing';
@@ -22,81 +22,68 @@ const B = BEATS.productReveal;
 /**
  * CENA 02 — PRODUCT REVEAL (2.5s a 6s)
  *
- * A cena vai da IDENTIDADE ao PRODUTO. Abre na estampa — a marca como grafismo
- * puro, pequena e distante, com a camera avancando e a luz vermelha correndo
- * por ela. Entao a mao atravessa o quadro e, no frame de maior cobertura, a
- * cena troca ATRAS dela: quando a mao sai, o que existe e a fotografia da peca
- * vestida.
+ * A peca entra pequena e distante, de frente, com a camera avancando e a luz
+ * vermelha correndo pela estampa. Entao a mao atravessa o quadro e, no frame
+ * de maior cobertura, a peca gira ATRAS dela: quando a mao sai, o que esta em
+ * cena sao as costas.
  *
- * A troca e escondida por um objeto em movimento, e nao por um fade. A
- * diferenca importa: um fade informa que houve uma transicao; um objeto que
- * passa faz a transicao desaparecer, e a marca acaba assinando o proprio corte.
+ * A virada frente/costas e escondida por um objeto em movimento, e nao por um
+ * fade. A diferenca importa: um fade informa que houve uma transicao; um
+ * objeto que passa faz a transicao desaparecer — e, como o objeto e a mao da
+ * propria estampa, a marca acaba assinando o proprio corte.
  *
- * A escalada tambem e narrativa — grafismo primeiro, corpo depois. O produto
- * chega como consequencia da identidade, nao como ilustracao dela.
+ * As duas faces sao placas de mesma proporcao e compartilham escala,
+ * enquadramento e deriva. E isso que faz as duas lerem como a MESMA peca
+ * girando, e nao como duas imagens diferentes cortadas uma na outra.
  */
 export const Scene02ProductReveal: React.FC = () => {
   const frame = useCurrentFrame();
 
   const front = useAsset('productFront');
   const back = useAsset('productBack');
-
-  // A troca acontece no pico do gesto. O numero e do beat, nao improvisado.
-  const showBack = frame >= B.swap;
+  const shown = frame >= B.swap ? back : front;
 
   // --- Camera --------------------------------------------------------------
   // Dolly continuo por toda a cena. Para de avancar antes do ultimo frame:
   // uma camera ainda acelerando no corte denuncia o corte.
-  const dolly = range(frame, [0, 100], [BASE_Z * 1.62, BASE_Z * 0.94], EASE.glide);
+  const dolly = range(frame, [0, 100], [BASE_Z * 1.62, BASE_Z * 0.98], EASE.glide);
 
-  // --- Estampa (frente) ----------------------------------------------------
-  const frontGrow = springAt(frame, 'heavy', {
+  // --- A peca --------------------------------------------------------------
+  // Cresce de 0.16 a 1 numa mola pesada: a peca tem massa, chega e assenta.
+  const grow = springAt(frame, 'heavy', {
     delay: B.frontIn[0],
     from: 0.16,
     to: 1,
     durationInFrames: B.frontIn[1] - B.frontIn[0],
   });
-  // Sem fade de saida: a estampa existe ate o frame da troca e some nele.
-  // Um cross-fade atras da mao produziria um instante preto na fresta entre os
-  // dedos — justamente o que a mao existe para evitar.
-  const frontOpacity = progress(frame, 0, 8, EASE.power3Out);
+  const appear = progress(frame, 0, 8, EASE.power3Out);
 
-  // Luz vermelha percorrendo a arte, de um lado ao outro.
+  // Depois da virada a peca continua sendo empurrada. Manter o movimento
+  // atravessando o corte e o que costura as duas faces numa coisa so.
+  const push = progress(frame, B.backIn[0], B.backIn[1], EASE.glide);
+  const pushScale = range(push, [0, 1], [1, 1.08]);
+
+  // Deriva lateral lenta: devolve movimento a uma imagem que e, tecnicamente,
+  // plana, e evita que a peca fique cravada no centro do quadro.
+  const parallax = progress(frame, 0, 105, EASE.glide);
+  const plateX = range(parallax, [0, 1], [34, -34]);
+  const plateY = range(parallax, [0, 1], [-12, 10]);
+
+  // --- Luz vermelha percorrendo a peca --------------------------------------
   const sweepT = progress(frame, B.frontLight[0], B.frontLight[1], EASE.sineInOut);
   const sweepX = range(sweepT, [0, 1], [-1000, 1000]);
   const sweepPower = Math.sin(sweepT * Math.PI);
 
-  // --- Fotografia (costas) -------------------------------------------------
-  // A foto entra ja grande — ela nao "cresce", ela e revelada. Continuar a
-  // aproximacao com a camera preserva o movimento atraves do corte.
-  // A foto entra OPACA no frame da troca. O que a fresta entre os dedos mostra
-  // e a imagem nova, nao um buraco.
-  const backSettle = progress(frame, B.backIn[0], B.backIn[0] + 10, EASE.expoOut);
-  const backPush = progress(frame, B.backIn[0], B.backIn[1], EASE.glide);
-  const backScale = range(backPush, [0, 1], [0.94, 1.12]) * range(backSettle, [0, 1], [1.04, 1]);
-
-  // Parallax: a peca e o fundo da fotografia andam em ritmos diferentes,
-  // o que devolve profundidade a uma imagem que e, tecnicamente, plana.
-  const parallax = progress(frame, B.backParallax[0], B.backParallax[1], EASE.glide);
-  const plateX = range(parallax, [0, 1], [46, -46]);
-  const plateY = range(parallax, [0, 1], [-18, 14]);
-
   const exit = 1 - progress(frame, B.exit[0], B.exit[1], EASE.power2In);
   const meta = inOut(frame, [B.backIn[0] + 14, B.backIn[0] + 28, 92, 102]);
 
-  // A fotografia e 849x538: uma paisagem de baixa resolucao dentro de um
-  // quadro vertical. Exibi-la como placa larga, com preto acima e abaixo, e
-  // linguagem de editorial — e evita ampliar a imagem alem do que ela aguenta.
-  const plateHeight = HEIGHT * 0.40;
+  // As placas tem ~452px de altura na origem. A 0.42 da altura do quadro elas
+  // sao ampliadas ~1.8x — o limite do que a foto aguenta antes de amolecer.
+  const plateHeight = HEIGHT * 0.42;
 
   return (
     <AbsoluteFill style={{ backgroundColor: COLORS.black, opacity: exit }}>
-      <Background
-        pool={showBack ? 0.34 : 0.62}
-        redWash={showBack ? 0.14 : sweepPower * 0.42}
-        grunge={0.35}
-        parallax={22}
-      />
+      <Background pool={0.5} redWash={sweepPower * 0.34} grunge={0.35} parallax={22} />
 
       <Stage exposure={1.02} environmentIntensity={0.5} redBounce={0.5 + sweepPower * 0.5}>
         <CameraRig position={[0, 0, dolly]} handheld={5} seed="reveal" />
@@ -112,33 +99,21 @@ export const Scene02ProductReveal: React.FC = () => {
           ambient={0.06}
         />
 
-        <Glow
-          position={[sweepX * 0.5, 20, -560]}
-          size={1700}
-          color={COLORS.redHot}
-          intensity={showBack ? 0.05 : sweepPower * 0.2}
-        />
+        <Glow position={[sweepX * 0.5, 20, -560]} size={1700} color={COLORS.redHot} intensity={sweepPower * 0.18} />
 
-        {/* IDENTIDADE — a estampa como grafismo, recebendo a luz da cena. */}
-        {front && !showBack ? (
+        {/* A PECA. Frente ate o pico do gesto, costas depois dele. */}
+        {shown ? (
           <ProductPlate
-            asset={front}
-            height={HEIGHT * 0.46}
-            scale={frontGrow}
-            opacity={frontOpacity}
-            rotation={[0, rad(-4 + sweepT * 8), 0]}
-            exposure={0.96}
-          />
-        ) : null}
-
-        {/* PRODUTO — a peca vestida. Fotografia exibida como fotografia. */}
-        {back && showBack ? (
-          <ProductPlate
-            asset={back}
+            asset={shown}
             height={plateHeight}
             position={[plateX, plateY, 0]}
-            scale={backScale}
-            exposure={0.94 + backSettle * 0.14}
+            scale={grow * pushScale}
+            opacity={appear}
+            rotation={[0, rad(-3 + sweepT * 6), 0]}
+            // A luz vermelha atravessa a peca abrindo a exposicao e puxando a
+            // dominante para o quente, e volta ao neutro quando ela passa.
+            exposure={0.74 + sweepPower * 0.5}
+            tint={sweepPower > 0.02 ? '#FFE6E0' : undefined}
           />
         ) : null}
 
@@ -155,7 +130,7 @@ export const Scene02ProductReveal: React.FC = () => {
           seed="reveal-dust"
         />
 
-        {/* A mao cobre a troca. Passa em primeiro plano, na frente de tudo. */}
+        {/* A mao cobre a virada. Passa em primeiro plano, na frente de tudo. */}
         <RedHandTransition frame={frame} window={B.handWipe} from="left" coverage={2.45} tilt={12} z={1500} motion="wipe" />
       </Stage>
 

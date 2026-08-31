@@ -31,7 +31,7 @@ const B = BEATS.details;
 export const Scene03Details: React.FC = () => {
   const frame = useCurrentFrame();
 
-  const back = useAsset('productBack');
+  const back = useAsset('productWorn');
   const hands = useAsset('hands');
 
   // A placa sobe e cede a metade inferior do quadro para o texto.

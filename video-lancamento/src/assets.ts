@@ -13,7 +13,7 @@ import * as THREE from 'three';
  * Os originais ficam intactos em `public/assets/source/`; `npm run assets`
  * gera as versoes recortadas usadas aqui.
  */
-export type AssetRole = 'productFront' | 'productBack' | 'hands';
+export type AssetRole = 'productFront' | 'productBack' | 'productWorn' | 'printMark' | 'hands';
 
 type AssetSpec = {
   /** Caminho relativo a /public. */
@@ -30,14 +30,24 @@ type AssetSpec = {
 
 export const ASSETS: Record<AssetRole, AssetSpec> = {
   productFront: {
-    src: 'assets/print-front.png',
-    kind: 'art',
-    role: 'Estampa da frente — a identidade grafica da marca',
+    src: 'assets/shirt-front.png',
+    kind: 'photo',
+    role: 'A peca, frente — abre o reveal',
   },
   productBack: {
+    src: 'assets/shirt-back.png',
+    kind: 'photo',
+    role: 'A peca, costas — revelada atras da mao',
+  },
+  productWorn: {
     src: 'assets/product-back.jpg',
     kind: 'photo',
-    role: 'Fotografia das costas — a peca vestida, o caimento',
+    role: 'A peca vestida — o caimento e o corpo, na cena de detalhes',
+  },
+  printMark: {
+    src: 'assets/print-front.png',
+    kind: 'art',
+    role: 'A estampa isolada — assina o ultimo frame',
   },
   hands: {
     src: 'assets/hands.png',
