@@ -4,26 +4,38 @@ Filme vertical construído inteiramente de forma programática com Remotion +
 React + TypeScript + Three.js. Sem After Effects, sem geração por IA: cada frame
 é uma função pura do número do frame.
 
-**Formato:** 1080 × 1920 (9:16) · 30 fps · 600 frames (20 s) · H.264
+**Formato:** 1080 × 1920 (9:16) · 30 fps · 450 frames (15 s) · H.264
 
 ---
 
 ## A ideia
 
-O centro monumental de São Paulo tratado como museu, e a marca entrando nele.
+**A mesma gramática do DROP 01, com o conteúdo da campanha de rua.**
 
-O filme abre com a linguagem da arquitetura — câmera de tripé, tipografia de
-etiqueta, o letreiro da EOG gravado em **pedra** na fachada do Theatro
-Municipal — e quebra para a linguagem da rua no frame em que a pedra vira tinta.
-A frase da própria marca, *EOG NAS RUAS*, é a tese.
+A estrutura, o ritmo e a linguagem visual são os do primeiro filme — o que o
+cliente aprovou. O que muda é o conteúdo: no lugar do estúdio preto entra o
+centro de São Paulo, e no lugar da peça fotografada em fundo neutro entra a
+campanha na rua.
+
+Silêncio, gesto vermelho rasgando o quadro, a marca cruzando a lente, a troca
+escondida atrás da mão, a ficha da peça em tipografia de editorial, a colisão
+da marca, e a assinatura limpa.
 
 | # | Cena | Tempo | Conteúdo |
 |---|------|-------|----------|
-| 01 | PATRIMÔNIO | 0 – 4,5 s | Recuo lento no Theatro. O letreiro nasce gravado na pedra. |
-| 02 | A QUEBRA | 4,5 – 7,5 s | A pedra vira marca. As mãos cruzam e entregam a rua. |
-| 03 | MARCA FIXA | 7,5 – 14 s | Seis lugares trocam atrás de um letreiro que não se move. |
-| 04 | NAS RUAS | 14 – 17,5 s | A frase em escala de monumento, com parallax. |
-| 05 | DROP | 17,5 – 20 s | Clarão, assinatura, contato. |
+| 01 | IMPACTO | 0 – 2,5 s | Sete frames de preto. A mão rasga o quadro. O letreiro cruza a lente. |
+| 02 | A RUA | 2,5 – 6 s | O Theatro se aproxima. A mão cruza e a foto troca atrás dela. |
+| 03 | ESPECIFICAÇÃO | 6 – 9 s | A foto sobe. MOLETINHO / CAIMENTO BOXY em blocos editoriais. |
+| 04 | A MARCA | 9 – 12 s | Letreiro e frase vêm de profundidades opostas e colidem. |
+| 05 | DROP | 12 – 15 s | Clarão, assinatura, DROP 01, EM BREVE. |
+
+### Por que esta estrutura
+
+O primeiro corte deste filme tinha outra: um arco lento de patrimônio para rua,
+em 20 segundos, com a marca ancorada e a cidade trocando atrás. Foi recusado —
+e a razão é boa. Aquele corte pedia paciência do espectador antes de entregar
+qualquer coisa, e um filme de lançamento não tem esse crédito. A estrutura do
+DROP 01 entrega o gesto nos primeiros sete frames e só depois explica.
 
 ---
 
@@ -73,10 +85,14 @@ absolutos. Ali em cima os dois relógios são o mesmo.
 
 ## Desenho de som
 
-Sem trilha musical — só desenho de som, e o silêncio como instrumento. São 34
-cues, e **22% do filme é completamente mudo**: os 14 primeiros frames, o respiro
-do fim da cena 03 e os últimos frames depois do golpe final. Sem esses vazios os
+Sem trilha musical — só desenho de som, e o silêncio como instrumento. São 29
+cues, e **18% do filme é completamente mudo**: os 7 frames de preto da abertura,
+a cena 03 quase inteira e os frames depois do golpe final. Sem esses vazios os
 impactos não teriam contra o que bater.
+
+A cena 03 tem 3 cues e volume máximo de 0,34 — é a mais quieta do filme, de
+propósito. Ela vem logo depois da troca escondida e logo antes da colisão, e é
+o vale entre os dois picos.
 
 Cada cue declara, no próprio código, **qual ação visual ele reforça**. Um som
 sem ação correspondente é ruído — foi essa regra que manteve a lista em 34
@@ -98,6 +114,10 @@ Enquanto a flag estiver desligada nenhum arquivo é requisitado.
 bate com o cabeçalho RIFF, que todo marcador de impacto tem som, que as janelas
 de silêncio continuam mudas e que nada empilha mais de cinco sons ao mesmo tempo.
 
+Foi esse script que pegou dois erros reais desta versão: o *whoosh* da mão
+começava 3 frames antes dela e gastava o preto da abertura, e o golpe final não
+tinha espaço para decair antes do último frame.
+
 ---
 
 ## Tipografia 3D — onde, e onde não
@@ -107,7 +127,8 @@ extrudada, e são justamente os dois que carregam a marca:
 
 | Elemento | Onde | Por quê |
 |---|---|---|
-| o letreiro EOG DRIP | cenas 01, 02, 03, 05 | é a marca; precisa ter matéria |
+| o letreiro EOG DRIP | cenas 01, 02, 04, 05 | é a marca; precisa ter matéria |
+| `EOG NAS RUAS` | cena 04 | vem de trás da lente e colide com o letreiro |
 | `DROP 01` | cena 05 | chega do fundo do palco, atravessando a profundidade |
 
 Todo o resto — etiquetas, legendas, *EOG NAS RUAS*, *EM BREVE*, contato — é
@@ -116,18 +137,17 @@ volume é o que a marca assina.
 
 ---
 
-## Ritmo, e por que a cena 03 acelera
+## A troca escondida
 
-Os seis cortes da cena 03 tinham intervalo constante. Uma grade regular vira
-metrônomo: o olho aprende o compasso em dois cortes e para de assistir. Agora os
-intervalos fecham — 28, 24, 20, 16, 12 frames — e então **travam** por 50 frames
-no último quadro.
+A cena 02 é construída sobre um corte que não se vê. O Theatro entra distante e
+a câmera avança; no frame de **maior cobertura da mão**, a fotografia troca para
+o trio contra a torre.
 
-Os cortes rápidos correm mudos: um texto que entra e sai em menos de 20 frames
-não é lido, é piscada. As legendas de local acompanham só as três primeiras
-trocas, e a ficha da peça entra no respiro, quando ela é a única coisa que se
-move. Aceleração e depois silêncio é a única figura que um corte regular não
-produz.
+Um fade informaria que houve transição. Um objeto que cruza faz a transição
+desaparecer — e como o objeto é a mão da própria estampa, a marca assina o
+próprio corte. É por isso que o movimento da mão usa `motion: 'wipe'`, com
+easing simétrico: só ele garante que o pico de cobertura caia exatamente no
+frame da troca.
 
 ---
 
@@ -173,8 +193,10 @@ ela cabe no quadro. É o dado que decide onde a câmera pode andar:
 | 2,98× | 2 (Theatro, 24,5 MP) | close e movimento pesado — a abertura da cena 01 |
 | 0,75× | 8 (campanha, 1,6 MP) | quadro cheio, deriva leve |
 
-Por isso o recuo longo acontece na cena 01 e não em outro lugar: é a única foto
-que aguenta.
+Por isso o avanço longo sobre o Theatro acontece na cena 02 e não em outro
+lugar: é a única foto que aguenta. Depois da troca, a mesma câmera continua
+andando com metade da amplitude, porque 0,75× de folga não suporta o mesmo
+movimento.
 
 **Os recortes de pessoas foram removidos.** Com 155 a 360 px de conteúdo, eles
 entravam em cena ampliados de três a cinco vezes, e a queda de qualidade era
@@ -198,11 +220,6 @@ Dimensionar uma foto de fundo pela altura do quadro sem essa correção deixa
 tarja preta em cima e embaixo — e o erro não aparece no código, só no frame
 renderizado. O cálculo está centralizado em `stageConfig.ts` justamente para não
 poder ser esquecido.
-
-**A âncora da cena 03.** O letreiro assume uma posição na tela e não sai mais
-dela enquanto seis fotos trocam atrás. O corte some porque o olho segura no
-elemento fixo e aceita que o mundo mude em volta. Qualquer deslocamento do logo
-entre um corte e outro denunciaria os dois.
 
 **Fotografia não é re-iluminada.** `PhotoPlate` usa `MeshBasicMaterial` de
 propósito: a luz de uma foto já está gravada nela, e somar um rig por cima

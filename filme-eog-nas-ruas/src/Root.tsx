@@ -1,12 +1,13 @@
 import { Composition } from 'remotion';
 import { EogNasRuas } from './compositions/EogNasRuas';
-import { Scene01Patrimonio } from './scenes/Scene01Patrimonio';
-import { Scene02Quebra } from './scenes/Scene02Quebra';
-import { Scene03MarcaFixa } from './scenes/Scene03MarcaFixa';
-import { Scene04NasRuas } from './scenes/Scene04NasRuas';
+import { Scene01Impacto } from './scenes/Scene01Impacto';
+import { Scene02Rua } from './scenes/Scene02Rua';
+import { Scene03Ficha } from './scenes/Scene03Ficha';
+import { Scene04Marca } from './scenes/Scene04Marca';
 import { Scene05Drop } from './scenes/Scene05Drop';
 import { AssetProvider } from './assets';
 import { LogoProvider } from './three/logoGeometry';
+import { TypefaceProvider } from './three/typeface';
 import { loadBrandFonts } from './styles/fonts';
 import { DURATION_IN_FRAMES, FPS, HEIGHT, SCENES, WIDTH } from './timing';
 
@@ -21,9 +22,11 @@ const FORMAT = { fps: FPS, width: WIDTH, height: HEIGHT } as const;
  */
 const solo = (Scene: React.FC): React.FC => () => (
   <LogoProvider>
-    <AssetProvider>
-      <Scene />
-    </AssetProvider>
+    <TypefaceProvider>
+      <AssetProvider>
+        <Scene />
+      </AssetProvider>
+    </TypefaceProvider>
   </LogoProvider>
 );
 
@@ -31,10 +34,10 @@ export const RemotionRoot: React.FC = () => (
   <>
     <Composition id="EogNasRuas" component={EogNasRuas} durationInFrames={DURATION_IN_FRAMES} {...FORMAT} />
 
-    <Composition id="Cena01-Patrimonio" component={solo(Scene01Patrimonio)} durationInFrames={SCENES.patrimonio.duration} {...FORMAT} />
-    <Composition id="Cena02-Quebra" component={solo(Scene02Quebra)} durationInFrames={SCENES.quebra.duration} {...FORMAT} />
-    <Composition id="Cena03-MarcaFixa" component={solo(Scene03MarcaFixa)} durationInFrames={SCENES.marcaFixa.duration} {...FORMAT} />
-    <Composition id="Cena04-NasRuas" component={solo(Scene04NasRuas)} durationInFrames={SCENES.nasRuas.duration} {...FORMAT} />
+    <Composition id="Cena01-Impacto" component={solo(Scene01Impacto)} durationInFrames={SCENES.impacto.duration} {...FORMAT} />
+    <Composition id="Cena02-Rua" component={solo(Scene02Rua)} durationInFrames={SCENES.rua.duration} {...FORMAT} />
+    <Composition id="Cena03-Ficha" component={solo(Scene03Ficha)} durationInFrames={SCENES.ficha.duration} {...FORMAT} />
+    <Composition id="Cena04-Marca" component={solo(Scene04Marca)} durationInFrames={SCENES.marca.duration} {...FORMAT} />
     <Composition id="Cena05-Drop" component={solo(Scene05Drop)} durationInFrames={SCENES.drop.duration} {...FORMAT} />
   </>
 );

@@ -2,10 +2,10 @@ import { AbsoluteFill, Sequence } from 'remotion';
 import { SoundDesign } from '../audio/SoundDesign';
 import { ImpactResponse } from '../components/ImpactResponse';
 import { TransitionLayer } from '../components/Transition';
-import { Scene01Patrimonio } from '../scenes/Scene01Patrimonio';
-import { Scene02Quebra } from '../scenes/Scene02Quebra';
-import { Scene03MarcaFixa } from '../scenes/Scene03MarcaFixa';
-import { Scene04NasRuas } from '../scenes/Scene04NasRuas';
+import { Scene01Impacto } from '../scenes/Scene01Impacto';
+import { Scene02Rua } from '../scenes/Scene02Rua';
+import { Scene03Ficha } from '../scenes/Scene03Ficha';
+import { Scene04Marca } from '../scenes/Scene04Marca';
 import { Scene05Drop } from '../scenes/Scene05Drop';
 import { AssetProvider } from '../assets';
 import { LogoProvider } from '../three/logoGeometry';
@@ -20,14 +20,14 @@ loadBrandFonts();
 
 /**
  * EOG DRIP — EOG NAS RUAS
- * Filme de campanha, 1080x1920, 30 fps, 20 segundos.
+ * Filme de campanha, 1080x1920, 30 fps, 15 segundos.
  *
- * PATRIMONIO -> QUEBRA -> MARCA FIXA -> NAS RUAS -> DROP
+ * IMPACTO -> A RUA -> ESPECIFICACAO -> A MARCA -> DROP
  *
- * A tese: o centro monumental de Sao Paulo tratado como museu, e a marca
- * entrando nele. O filme abre com a linguagem da arquitetura — camera de tripe,
- * tipografia de etiqueta, o letreiro gravado na pedra da fachada — e quebra
- * para a linguagem da rua no frame em que a pedra vira tinta.
+ * A mesma gramatica do DROP 01, com o conteudo da campanha de rua: silencio,
+ * gesto vermelho rasgando o quadro, a marca cruzando a lente, a fotografia de
+ * Sao Paulo com a troca escondida atras da mao, a ficha da peca em linguagem
+ * de editorial, a colisao da marca, e a assinatura limpa.
  *
  * Os tres provedores ficam acima de tudo porque o Remotion desenha cada frame
  * uma unica vez: geometria, fonte ou textura que chegue depois do draw nunca
@@ -40,20 +40,20 @@ export const EogNasRuas: React.FC = () => (
     <LogoProvider>
       <TypefaceProvider>
         <AssetProvider>
-          <Sequence from={SCENES.patrimonio.from} durationInFrames={SCENES.patrimonio.duration} name="01 — Patrimônio">
-            <Scene01Patrimonio />
+          <Sequence from={SCENES.impacto.from} durationInFrames={SCENES.impacto.duration} name="01 — Impacto">
+            <Scene01Impacto />
           </Sequence>
 
-          <Sequence from={SCENES.quebra.from} durationInFrames={SCENES.quebra.duration} name="02 — A Quebra">
-            <Scene02Quebra />
+          <Sequence from={SCENES.rua.from} durationInFrames={SCENES.rua.duration} name="02 — A Rua">
+            <Scene02Rua />
           </Sequence>
 
-          <Sequence from={SCENES.marcaFixa.from} durationInFrames={SCENES.marcaFixa.duration} name="03 — Marca Fixa">
-            <Scene03MarcaFixa />
+          <Sequence from={SCENES.ficha.from} durationInFrames={SCENES.ficha.duration} name="03 — Especificação">
+            <Scene03Ficha />
           </Sequence>
 
-          <Sequence from={SCENES.nasRuas.from} durationInFrames={SCENES.nasRuas.duration} name="04 — Nas Ruas">
-            <Scene04NasRuas />
+          <Sequence from={SCENES.marca.from} durationInFrames={SCENES.marca.duration} name="04 — A Marca">
+            <Scene04Marca />
           </Sequence>
 
           <Sequence from={SCENES.drop.from} durationInFrames={SCENES.drop.duration} name="05 — Drop">

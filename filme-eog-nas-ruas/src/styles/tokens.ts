@@ -82,3 +82,22 @@ export const FONTS = {
   grotesque: '"Archivo", "Helvetica Neue", Arial, sans-serif',
   editorial: '"Playfair Display", Georgia, serif',
 } as const;
+
+/**
+ * Mistura duas cores hexadecimais em [0,1].
+ *
+ * Existe porque `PhotoPlate.tint` recebe uma cor, e a luz de uma cena varia
+ * frame a frame: sem isso cada cena precisaria importar o `three` so para
+ * interpolar uma cor, e a camada DOM nao tem esse import.
+ */
+export const mixHex = (a: string, b: string, t: number): string => {
+  const clamp = Math.max(0, Math.min(1, t));
+  const parse = (hex: string): [number, number, number] => {
+    const n = parseInt(hex.replace('#', ''), 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  };
+  const [ar, ag, ab] = parse(a);
+  const [br, bg, bb] = parse(b);
+  const to = (x: number) => Math.round(x).toString(16).padStart(2, '0');
+  return `#${to(ar + (br - ar) * clamp)}${to(ag + (bg - ag) * clamp)}${to(ab + (bb - ab) * clamp)}`;
+};

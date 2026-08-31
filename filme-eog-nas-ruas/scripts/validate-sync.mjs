@@ -77,7 +77,8 @@ for (const m of MARKERS.filter((x) => x.kind === 'impact' || x.kind === 'finalHi
 // 3 — silencio de direcao.
 console.log('\n3. Janelas de silencio');
 const SILENCIOS = [
-  { nome: 'abertura do filme', from: 0, to: 13 },
+  // O filme abre com 7 frames de preto — e essa a janela que a direcao promete.
+  { nome: 'abertura do filme', from: 0, to: 6 },
   { nome: 'respiro apos o ultimo golpe', from: DURATION_IN_FRAMES - 4, to: DURATION_IN_FRAMES },
 ];
 for (const s of SILENCIOS) {

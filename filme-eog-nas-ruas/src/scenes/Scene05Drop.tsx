@@ -16,17 +16,17 @@ import { BEATS, HEIGHT } from '../timing';
 const B = BEATS.drop;
 
 /**
- * CENA 05 — DROP (17.5s a 20s)
+ * CENA 05 — DROP (12s a 15s)
  *
  * Preto. Um clarao vermelho de tres frames. Seis frames de silencio — e essa
  * pausa que da peso ao que vem depois. Entao a assinatura.
  *
- * Depois de vinte segundos de profundidade, o fecho ganha forca por quase
+ * Depois de quinze segundos de profundidade, o fecho ganha forca por quase
  * abandona-la: o letreiro para de girar e assenta quase de frente. A unica
- * coisa que ainda vem de longe e DROP 01, e ela vem como geometria extrudada,
- * atravessando o palco de tras para a frente. Todo o resto do texto e plano,
- * e essa diferenca E a hierarquia. O ultimo frame precisa aguentar ser visto
- * parado.
+ * coisa que ainda vem de longe e DROP 01, e ela vem como geometria extrudada.
+ * Todo o resto do texto e plano, e essa diferenca E a hierarquia.
+ *
+ * O ultimo frame precisa aguentar ser visto parado.
  */
 export const Scene05Drop: React.FC = () => {
   const frame = useCurrentFrame();
@@ -34,28 +34,25 @@ export const Scene05Drop: React.FC = () => {
   const clarao = pulse(frame, B.clarao[0], B.clarao[1], 0.3);
 
   const marca = springAt(frame, 'solid', {
-    delay: B.marca[0],
-    durationInFrames: B.marca[1] - B.marca[0],
+    delay: B.marcaIn[0],
+    durationInFrames: B.marcaIn[1] - B.marcaIn[0],
   });
   // Giro que desacelera ate quase parar: a marca chega e assenta.
-  const giro = range(progress(frame, B.marca[0], B.marca[1] + 16, EASE.expoOut), [0, 1], [0.5, 0.04]);
+  const giro = range(progress(frame, B.marcaIn[0], B.marcaIn[1] + 16, EASE.expoOut), [0, 1], [0.5, 0.04]);
 
+  const frase = progress(frame, B.frase[0], B.frase[1], EASE.power4Out);
   const regua = progress(frame, B.regua[0], B.regua[1], EASE.power4Out);
 
   /**
-   * DROP 01 e o unico texto do filme que existe como GEOMETRIA, e nao como
-   * fonte desenhada na tela. Ele chega vindo do fundo do palco e trava: e o
-   * mesmo beat da regua, entao a linha horizontal abre no exato frame em que a
-   * palavra assenta sobre ela.
+   * DROP 01 e o unico texto do fecho que existe como GEOMETRIA. Ele chega
+   * vindo do fundo do palco e trava — e o mesmo beat da regua, entao a linha
+   * horizontal abre no exato frame em que a palavra assenta sobre ela.
    */
-  const drop = springAt(frame, 'snap', { delay: B.regua[0], durationInFrames: B.regua[1] - B.regua[0] });
-  // Profundidade real: a palavra nasce 900 unidades atras e vem ate a frente.
+  const drop = springAt(frame, 'snap', { delay: B.dropIn[0], durationInFrames: B.dropIn[1] - B.dropIn[0] });
   const dropZ = range(drop, [0, 1], [-900, 300]);
-  // Velocidade quadro a quadro. O borrao so existe enquanto ela e alta — e
-  // por isso que ele desaparece sozinho quando a palavra para.
-  const dropVel = Math.max(0, 1 - progress(frame, B.regua[0], B.regua[0] + 12, EASE.expoOut));
+  const dropVel = Math.max(0, 1 - progress(frame, B.dropIn[0], B.dropIn[0] + 12, EASE.expoOut));
+
   const breve = springAt(frame, 'snap', { delay: B.breve[0], durationInFrames: B.breve[1] - B.breve[0] });
-  const contato = progress(frame, B.contato[0], B.contato[1], EASE.power3Out);
   const fim = 1 - progress(frame, B.fim[0], B.fim[1], EASE.power2In);
 
   return (
@@ -69,9 +66,10 @@ export const Scene05Drop: React.FC = () => {
       <Stage exposure={1.04} environmentIntensity={0.6} redBounce={0.6}>
         <CameraRig position={[0, 0, BASE_Z]} handheld={3} seed="drop" />
         <Lighting key={2.4} fill={0.18} rim={3} rimPosition={[-480, 220, -640]} top={2.6} ambient={0.08} />
+
         <LogoExtruded
           height={470 * marca}
-          position={[0, HEIGHT * 0.11, 240]}
+          position={[0, HEIGHT * 0.13, 240]}
           rotation={[rad(-2), giro, 0]}
           finish={1}
           opacity={marca}
@@ -81,10 +79,13 @@ export const Scene05Drop: React.FC = () => {
         {drop > 0.001 ? (
           <Typography3D
             text={LABELS.drop}
-            size={84}
-            depth={34}
+            size={80}
+            depth={32}
             tracking={0.16}
-            position={[0, -HEIGHT * 0.075, dropZ]}
+            // Acima da regua, e nao abaixo: a regua separa o bloco da marca do
+            // bloco de chamada, e DROP 01 pertence ao primeiro. Medido no
+            // frame renderizado — em -0.14 ele caía em cima de EM BREVE.
+            position={[0, -HEIGHT * 0.0885, dropZ]}
             // Uma inclinacao minima em X entrega a face superior da extrusao a
             // luz de cima. Sem ela a palavra leria como texto plano.
             rotation={[rad(-7), range(drop, [0, 1], [rad(-16), 0]), 0]}
@@ -102,13 +103,30 @@ export const Scene05Drop: React.FC = () => {
       <AbsoluteFill
         style={{
           alignItems: 'center',
-          justifyContent: 'center',
-          paddingTop: HEIGHT * 0.42,
+          justifyContent: 'flex-start',
+          paddingTop: HEIGHT * 0.53,
           pointerEvents: 'none',
         }}
       >
+        {/* A frase da campanha, plana, logo abaixo do letreiro. */}
         <div
           style={{
+            fontFamily: FONTS.grotesque,
+            fontSize: 26,
+            fontWeight: 600,
+            letterSpacing: TRACKING.widest,
+            textTransform: 'uppercase',
+            color: COLORS.bone,
+            opacity: frase,
+            transform: `translateY(${((1 - frase) * 16).toFixed(1)}px)`,
+          }}
+        >
+          {BRAND.tagline}
+        </div>
+
+        <div
+          style={{
+            marginTop: 176,
             width: 420,
             height: 1,
             background: COLORS.ashDim,
@@ -118,9 +136,9 @@ export const Scene05Drop: React.FC = () => {
 
         <div
           style={{
-            marginTop: 52,
+            marginTop: 70,
             fontFamily: FONTS.display,
-            fontSize: 104,
+            fontSize: 96,
             letterSpacing: TRACKING.wide,
             color: COLORS.red,
             transform: `scale(${range(breve, [0, 1], [0.24, 1]).toFixed(4)})`,
@@ -132,18 +150,17 @@ export const Scene05Drop: React.FC = () => {
 
         <div
           style={{
-            marginTop: 44,
+            marginTop: 40,
             display: 'flex',
             gap: 26,
             alignItems: 'baseline',
             fontFamily: FONTS.grotesque,
-            fontSize: 25,
+            fontSize: 24,
             fontWeight: 600,
             letterSpacing: TRACKING.wider,
             textTransform: 'uppercase',
             color: COLORS.ash,
-            opacity: contato,
-            transform: `translateY(${((1 - contato) * 18).toFixed(1)}px)`,
+            opacity: breve * 0.9,
           }}
         >
           <span>{BRAND.handle}</span>
@@ -152,11 +169,10 @@ export const Scene05Drop: React.FC = () => {
         </div>
 
         {/* Nota de rodape da hierarquia: a menor tipografia do filme, e a
-            unica informacao de escassez. Entra depois de tudo, quase junto do
-            corte final — se entrasse antes, disputaria com EM BREVE. */}
+            unica informacao de escassez. */}
         <div
           style={{
-            marginTop: 30,
+            marginTop: 28,
             display: 'flex',
             gap: 18,
             fontFamily: FONTS.grotesque,
@@ -165,7 +181,7 @@ export const Scene05Drop: React.FC = () => {
             letterSpacing: TRACKING.widest,
             textTransform: 'uppercase',
             color: COLORS.ash,
-            opacity: contato * 0.62,
+            opacity: breve * 0.55,
           }}
         >
           <span>{LABELS.limitado}</span>

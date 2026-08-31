@@ -6,9 +6,13 @@
  * Convencao: `BEATS` sao frames LOCAIS, relativos ao inicio da propria cena.
  * `SCENES` sao frames ABSOLUTOS.
  *
- * A ideia: o centro monumental de Sao Paulo tratado como museu, e a marca
- * entrando nele. O filme comeca com a linguagem da arquitetura — camera parada,
- * reverente — e quebra para a linguagem da rua no momento em que a crew aparece.
+ * ESTRUTURA: a mesma do DROP 01 — a linguagem que o cliente aprovou.
+ * IMPACTO -> A RUA -> ESPECIFICACAO -> A MARCA -> DROP
+ *
+ * O que muda e o conteudo: no lugar do estudio preto entra o centro de Sao
+ * Paulo, e no lugar da peca fotografada em fundo neutro entra a campanha na
+ * rua. A gramatica — silencio, gesto vermelho, tipografia editorial em bloco,
+ * colisao da marca, assinatura limpa — e a mesma.
  */
 
 export const FPS = 30;
@@ -17,8 +21,8 @@ export const HEIGHT = 1920;
 
 export const seconds = (s: number): number => Math.round(s * FPS);
 
-/** 20 segundos. Quinze eram curtos demais para o arco monumento -> rua. */
-export const DURATION_IN_FRAMES = seconds(20); // 600
+/** 15 segundos, como o DROP 01. */
+export const DURATION_IN_FRAMES = seconds(15); // 450
 
 type SceneSpan = { readonly from: number; readonly duration: number };
 
@@ -28,102 +32,104 @@ const span = (a: number, b: number): SceneSpan => ({
 });
 
 export const SCENES = {
-  /** O monumento, vazio e formal. A marca nasce gravada na pedra. */
-  patrimonio: span(0, 4.5),   //   0 - 135
-  /** A quebra: a pedra ganha a cor da marca e a rua entra. */
-  quebra: span(4.5, 7.5),     // 135 - 225
-  /** A marca fixa enquanto a cidade muda atras dela. */
-  marcaFixa: span(7.5, 14),   // 225 - 420
-  /** A crew no espaco monumental, em escala. */
-  nasRuas: span(14, 17.5),    // 420 - 525
+  /** Preto, o gesto vermelho, e a marca chegando. */
+  impacto: span(0, 2.5),      //   0 -  75
+  /** A rua entra. A mao faz a troca acontecer atras dela. */
+  rua: span(2.5, 6),          //  75 - 180
+  /** A ficha da peca, em linguagem de editorial. */
+  ficha: span(6, 9),          // 180 - 270
+  /** A marca domina a composicao. */
+  marca: span(9, 12),         // 270 - 360
   /** Assinatura. */
-  drop: span(17.5, 20),       // 525 - 600
+  drop: span(12, 15),         // 360 - 450
 } as const;
 
 export type SceneName = keyof typeof SCENES;
 
 export const BEATS = {
-  /** CENA 01 — PATRIMONIO (135f). */
-  patrimonio: {
-    /** Preto de verdade. O silencio e o que da peso ao que vem depois. */
-    silencio: [0, 16] as const,
-    /** Aproximacao lenta na fachada. Camera de documentario de arquitetura. */
-    aproximacao: [14, 135] as const,
-    /** Etiqueta de museu: pequena, tracada, precisa. */
-    etiqueta: [34, 52] as const,
-    /** O letreiro se materializa em pedra, entre os ornamentos. */
-    relevoIn: [66, 104] as const,
-    /** Giro curto que revela a espessura da extrusao. */
-    relevoGiro: [66, 135] as const,
+  /** CENA 01 — IMPACTO (75f). */
+  impacto: {
+    /** Preto de verdade. Sem isso o impacto nao tem de onde vir. */
+    silencio: [0, 7] as const,
+    /** A mao rasga o quadro em 15 frames. Rapida o bastante para exigir borrao. */
+    rasgo: [7, 22] as const,
+    /** A camera e arrancada na direcao contraria ao gesto, e volta ao eixo. */
+    whip: [7, 30] as const,
+    /** Estilhacos apenas na esteira do gesto, e apenas enquanto ele acontece. */
+    estilhaco: [9, 40] as const,
+    /** EOG chega logo atras da mao. */
+    eogIn: [21, 44] as const,
+    /** NAS RUAS avanca em outra escala e outra profundidade. */
+    ruasIn: [40, 66] as const,
+    /** O frame em que NAS RUAS cruza o plano da lente. */
+    ruasPass: 62,
+    saida: [66, 75] as const,
   },
 
-  /** CENA 02 — A QUEBRA (90f). */
-  quebra: {
-    /** A pedra recebe a cor da marca. */
-    virada: [0, 24] as const,
-    /** O corte para a rua. A partir daqui a camera e de mao. */
-    rua: 26,
-    /** As maos atravessam o quadro e entregam a rua atras delas. */
-    maos: [20, 44] as const,
-    /** Rajada de cortes na cidade. A rua chega em tres golpes, nao num fade. */
-    rajada: [48, 66] as const,
-    /** Trepidacao curta do corte — reacao, nao efeito. */
-    impacto: [26, 44] as const,
+  /** CENA 02 — A RUA (105f). */
+  rua: {
+    /** O Theatro entra pequeno e distante; a camera avanca. */
+    theatroIn: [0, 42] as const,
+    /** Luz vermelha percorre a fachada. */
+    luz: [6, 46] as const,
+    /** A mao atravessa o quadro e faz a troca acontecer atras dela. */
+    wipe: [40, 60] as const,
+    /** O frame exato da troca — no ponto de maior cobertura da mao. */
+    troca: 50,
+    /** O trio contra a torre, revelado e aproximado. */
+    trioIn: [50, 100] as const,
+    /** Parallax entre a fotografia e o fundo. */
+    parallax: [50, 105] as const,
+    saida: [96, 105] as const,
+  },
+
+  /** CENA 03 — ESPECIFICACAO (90f). */
+  ficha: {
+    /** A fotografia recompoe: sobe e abre espaco para o texto. */
+    sobe: [0, 20] as const,
+    /** MOLETINHO. */
+    specA: [8, 30] as const,
+    /** A mao pequena que liga uma informacao a outra. */
+    conector: [28, 44] as const,
+    /** CAIMENTO BOXY. */
+    specB: [34, 56] as const,
+    /** Os elementos se reduzem e preparam a entrada da marca. */
+    reduz: [64, 82] as const,
     saida: [80, 90] as const,
   },
 
-  /** CENA 03 — MARCA FIXA (195f). */
-  marcaFixa: {
-    /** O letreiro assume a posicao de ancora e nao sai mais dela. */
-    ancora: [0, 18] as const,
-    /**
-     * Trocas da cidade atras da ancora. Cada numero e um corte.
-     * O logo nao se move em nenhum deles — e isso que faz o corte sumir.
-     *
-     * Os intervalos ACELERAM (28, 24, 20, 16, 12) e param. Uma grade regular
-     * vira metronomo: o olho aprende o compasso e para de assistir. Acelerar
-     * e travar no ultimo quadro cria a unica coisa que o corte regular nao
-     * produz — expectativa, e depois silencio. Os 50 frames parados no fim
-     * nao sao sobra: sao o respiro onde a ficha da peca cabe.
-     */
-    trocas: [30, 58, 82, 102, 118, 130] as const,
-    /** Etiquetas de local, entrando e saindo com as trocas. */
-    legendas: [34, 46] as const,
-    /** A ficha do produto entra no respiro, depois que os cortes travam. */
-    ficha: [136, 150] as const,
-    saida: [180, 195] as const,
+  /** CENA 04 — A MARCA (90f). */
+  marca: {
+    /** O letreiro emerge do fundo do espaco. */
+    logoIn: [0, 32] as const,
+    /** A frase vem de tras da lente, em direcao oposta. */
+    fraseIn: [10, 40] as const,
+    /** O encontro. Tudo reage a este numero. */
+    colisao: 40,
+    /** Reacao: trepidacao curta, clarao, estilhacos. */
+    choque: [40, 58] as const,
+    /** A assinatura da marca, ja assentada. */
+    assinatura: [50, 76] as const,
+    /** Deriva lenta de perspectiva depois do impacto. */
+    deriva: [40, 90] as const,
+    saida: [80, 90] as const,
   },
 
-  /** CENA 04 — NAS RUAS (105f). */
-  nasRuas: {
-    /** A fotografia abre em escala monumental. */
-    abertura: [0, 30] as const,
-    /** A frase da marca, em tipografia de monumento. */
-    frase: [16, 48] as const,
-    /** Parallax entre a arquitetura e a tipografia. */
-    parallax: [0, 105] as const,
-    /**
-     * As maos voltam, agora como PRIMEIRO PLANO da abertura: elas passam
-     * rentes a lente e a arquitetura se revela atras. E o mesmo dispositivo da
-     * cena 02 usado com outra funcao — la ele escondia um corte, aqui ele da
-     * profundidade a um plano que seria chapado.
-     */
-    maos: [0, 20] as const,
-    saida: [92, 105] as const,
-  },
-
-  /** CENA 05 — DROP (75f). */
+  /** CENA 05 — DROP (90f). */
   drop: {
-    apagao: [0, 5] as const,
-    /** Clarao unico e curtissimo. */
-    clarao: [5, 8] as const,
-    /** Silencio antes da assinatura. */
-    respiro: [8, 14] as const,
-    marca: [14, 34] as const,
-    regua: [32, 44] as const,
-    breve: [42, 56] as const,
-    contato: [54, 68] as const,
-    fim: [68, 75] as const,
+    apagao: [0, 6] as const,
+    /** Clarao unico, tres frames. */
+    clarao: [6, 9] as const,
+    /** Silencio visual antes da assinatura. E ele que da peso ao ultimo frame. */
+    respiro: [9, 15] as const,
+    /** O letreiro entra como marca. */
+    marcaIn: [15, 32] as const,
+    /** EOG NAS RUAS. */
+    frase: [24, 44] as const,
+    regua: [40, 52] as const,
+    dropIn: [50, 64] as const,
+    breve: [64, 78] as const,
+    fim: [83, 90] as const,
   },
 } as const;
 
@@ -142,17 +148,21 @@ export type TransitionCue = {
  * proprio contexto WebGL, e um corte seco denunciaria esse remount.
  */
 export const TRANSITIONS = [
-  // 02 -> 03: corte curto. A marca ja esta em cena, entao a troca e discreta.
-  { kind: 'shutter', at: SCENES.marcaFixa.from - 4, duration: 8, direction: 'up' },
-  // 03 -> 04: varredura, acompanhando a abertura de escala.
-  { kind: 'wipe', at: SCENES.nasRuas.from - 5, duration: 11, direction: 'left' },
-  // 04 -> 05: persiana entregando o preto do fecho.
+  // 01 -> 02: persiana rapida para cima, escondendo a troca de cena 3D.
+  { kind: 'shutter', at: SCENES.rua.from - 6, duration: 12, direction: 'up' },
+  // 02 -> 03: corte curto, para a fotografia parecer continuar de uma cena a outra.
+  { kind: 'shutter', at: SCENES.ficha.from - 4, duration: 8, direction: 'down' },
+  // 03 -> 04: clarao vermelho anunciando o bloco da marca.
+  { kind: 'flash', at: SCENES.marca.from - 3, duration: 7, color: 'red' },
+  // 04 -> 05: persiana para baixo, entregando a tela preta do fecho.
   { kind: 'shutter', at: SCENES.drop.from - 6, duration: 10, direction: 'down' },
 ] as const satisfies readonly TransitionCue[];
 
 export const GRAIN = {
+  /** Acima de 0.1 vira ruido, nao textura. */
   opacity: 0.05,
   tile: 256,
+  /** Grao trocado a cada N frames — grao por frame treme demais a 30 fps. */
   holdFrames: 2,
 } as const;
 
@@ -190,43 +200,36 @@ const B = BEATS;
  * nunca digitado a mao — mexer no ritmo em um lugar move som e imagem juntos.
  */
 export const MARKERS: readonly Marker[] = [
-  { kind: 'sceneStart', at: S.patrimonio.from, note: '01 — o preto antes da imagem' },
-  { kind: 'textReveal', at: abs('patrimonio', B.patrimonio.etiqueta[0]), note: 'etiqueta de museu' },
-  { kind: 'beat', at: abs('patrimonio', B.patrimonio.relevoIn[0]), note: 'o relevo comeca a existir' },
-  { kind: 'beat', at: abs('patrimonio', B.patrimonio.relevoIn[1]), note: 'o relevo assenta' },
-  { kind: 'sceneEnd', at: S.patrimonio.from + S.patrimonio.duration, note: '01 termina' },
+  { kind: 'sceneStart', at: S.impacto.from, note: '01 — o preto antes do gesto' },
+  { kind: 'impact', at: abs('impacto', B.impacto.rasgo[0]), note: 'A MAO RASGA O QUADRO' },
+  { kind: 'beat', at: abs('impacto', B.impacto.eogIn[0]), note: 'EOG entra atras da mao' },
+  { kind: 'impact', at: abs('impacto', B.impacto.ruasPass), note: 'NAS RUAS cruza o plano da lente' },
+  { kind: 'sceneEnd', at: S.impacto.from + S.impacto.duration, note: '01 termina' },
 
-  { kind: 'sceneStart', at: S.quebra.from, note: '02 — a virada de material' },
-  { kind: 'transition', at: abs('quebra', B.quebra.maos[0]), note: 'as maos entram no quadro' },
-  { kind: 'impact', at: abs('quebra', B.quebra.rua), note: 'CORTE PARA A RUA — o maior impacto do filme' },
-  { kind: 'impact', at: abs('quebra', B.quebra.rajada[0]), note: 'segundo golpe da rajada' },
-  { kind: 'impact', at: abs('quebra', B.quebra.rajada[1]), note: 'terceiro golpe da rajada' },
-  { kind: 'sceneEnd', at: S.quebra.from + S.quebra.duration, note: '02 termina' },
+  { kind: 'transition', at: TRANSITIONS[0].at, note: 'persiana 01 -> 02' },
+  { kind: 'sceneStart', at: S.rua.from, note: '02 — a rua' },
+  { kind: 'transition', at: abs('rua', B.rua.wipe[0]), note: 'a mao entra para o wipe' },
+  { kind: 'impact', at: abs('rua', B.rua.troca), note: 'TROCA atras da mao' },
+  { kind: 'sceneEnd', at: S.rua.from + S.rua.duration, note: '02 termina' },
 
-  { kind: 'transition', at: TRANSITIONS[0].at, note: 'persiana 02 -> 03' },
-  { kind: 'sceneStart', at: S.marcaFixa.from, note: '03 — a marca trava no quadro' },
-  { kind: 'productReveal', at: abs('marcaFixa', B.marcaFixa.ancora[1]), note: 'a ancora esta posta' },
-  { kind: 'textReveal', at: abs('marcaFixa', B.marcaFixa.legendas[0]), note: 'etiquetas de local' },
-  ...B.marcaFixa.trocas.map(
-    (t, i): Marker => ({
-      kind: 'beat',
-      at: abs('marcaFixa', t),
-      note: `troca ${i + 1}/${B.marcaFixa.trocas.length} — a cidade muda, a marca nao`,
-    }),
-  ),
-  { kind: 'textReveal', at: abs('marcaFixa', B.marcaFixa.ficha[0]), note: 'ficha da peca, no respiro' },
-  { kind: 'sceneEnd', at: S.marcaFixa.from + S.marcaFixa.duration, note: '03 termina' },
+  { kind: 'transition', at: TRANSITIONS[1].at, note: 'persiana 02 -> 03' },
+  { kind: 'sceneStart', at: S.ficha.from, note: '03 — especificacao' },
+  { kind: 'textReveal', at: abs('ficha', B.ficha.specA[0]), note: 'MOLETINHO' },
+  { kind: 'beat', at: abs('ficha', B.ficha.conector[0]), note: 'o conector liga os dois blocos' },
+  { kind: 'textReveal', at: abs('ficha', B.ficha.specB[0]), note: 'CAIMENTO BOXY' },
+  { kind: 'sceneEnd', at: S.ficha.from + S.ficha.duration, note: '03 termina' },
 
-  { kind: 'transition', at: TRANSITIONS[1].at, note: 'varredura 03 -> 04' },
-  { kind: 'transition', at: abs('nasRuas', B.nasRuas.maos[0]), note: 'as maos cruzam a lente na abertura' },
-  { kind: 'sceneStart', at: S.nasRuas.from, note: '04 — abertura de escala' },
-  { kind: 'textReveal', at: abs('nasRuas', B.nasRuas.frase[0]), note: 'EOG NAS RUAS' },
-  { kind: 'sceneEnd', at: S.nasRuas.from + S.nasRuas.duration, note: '04 termina' },
+  { kind: 'transition', at: TRANSITIONS[2].at, note: 'clarao vermelho 03 -> 04' },
+  { kind: 'sceneStart', at: S.marca.from, note: '04 — a marca' },
+  { kind: 'impact', at: abs('marca', B.marca.colisao), note: 'A COLISAO — o pico do filme' },
+  { kind: 'productReveal', at: abs('marca', B.marca.assinatura[0]), note: 'a assinatura assenta' },
+  { kind: 'sceneEnd', at: S.marca.from + S.marca.duration, note: '04 termina' },
 
-  { kind: 'transition', at: TRANSITIONS[2].at, note: 'persiana 04 -> 05' },
+  { kind: 'transition', at: TRANSITIONS[3].at, note: 'persiana 04 -> 05' },
   { kind: 'sceneStart', at: S.drop.from, note: '05 — apagao' },
   { kind: 'impact', at: abs('drop', B.drop.clarao[0]), note: 'CLARAO — o drop' },
-  { kind: 'productReveal', at: abs('drop', B.drop.marca[0]), note: 'assinatura da marca' },
+  { kind: 'productReveal', at: abs('drop', B.drop.marcaIn[0]), note: 'assinatura da marca' },
+  { kind: 'textReveal', at: abs('drop', B.drop.dropIn[0]), note: 'DROP 01' },
   { kind: 'textReveal', at: abs('drop', B.drop.breve[0]), note: 'EM BREVE' },
   { kind: 'finalHit', at: abs('drop', B.drop.fim[0]) - 10, note: 'ultimo golpe, e o silencio' },
   { kind: 'sceneEnd', at: S.drop.from + S.drop.duration, note: 'fim' },
@@ -242,7 +245,11 @@ export const markersOf = (kind: MarkerKind): readonly number[] =>
  * cena em que esta. A queda e exponencial porque impacto real decai rapido e
  * some devagar — linear soaria mecanico.
  */
-export const impactEnergy = (frame: number, decay = 14, kinds: readonly MarkerKind[] = ['impact', 'finalHit']): number => {
+export const impactEnergy = (
+  frame: number,
+  decay = 14,
+  kinds: readonly MarkerKind[] = ['impact', 'finalHit'],
+): number => {
   let energy = 0;
   for (const m of MARKERS) {
     if (!kinds.includes(m.kind)) continue;
@@ -315,70 +322,62 @@ const landsOn = (sound: SoundName, at: number): number => at - SOUND_FRAMES[soun
  * Duas regras governam esta lista:
  *
  * 1. Nenhum som existe sozinho. Cada linha nomeia a acao visual que reforca, e
- *    um som sem acao correspondente e ruido — foi por isso que a lista tem
- *    trinta e poucas entradas e nao cem.
- * 2. O silencio e um instrumento. Os primeiros 14 frames, o respiro do fim da
- *    cena 03 e os ultimos frames do filme sao mudos de proposito: sem eles os
- *    impactos nao teriam contra o que bater.
- *
- * A dinamica tambem e desenhada: a cena 01 nunca passa de 0.35, o corte para a
- * rua chega a 0.9, e o filme fecha em um unico golpe seguido de silencio.
+ *    um som sem acao correspondente e ruido.
+ * 2. O silencio e um instrumento. Os primeiros frames e os ultimos frames do
+ *    filme sao mudos de proposito: sem eles os impactos nao teriam contra o
+ *    que bater.
  */
 export const SOUND_CUES: readonly SoundCue[] = [
-  // --- 01 PATRIMONIO — camara baixa, quase muda.
-  { sound: 'rumble', at: 14, volume: 0.26, reason: 'a sala do museu ganha ar quando a foto aparece' },
-  { sound: 'textReveal', at: abs('patrimonio', B.patrimonio.etiqueta[0]), volume: 0.3, reason: 'a etiqueta e escrita' },
-  { sound: 'click', at: abs('patrimonio', B.patrimonio.etiqueta[0]) + 8, volume: 0.22, reason: 'a segunda linha da etiqueta' },
-  { sound: 'whoosh', at: abs('patrimonio', B.patrimonio.relevoIn[0]) - 8, volume: 0.2, reason: 'o relevo se materializa na fachada' },
-  { sound: 'hit', at: abs('patrimonio', B.patrimonio.relevoIn[1]), volume: 0.28, reason: 'o relevo assenta na pedra' },
+  // --- 01 IMPACTO
+  // Comeca EXATAMENTE no frame da mao, e nao antes: os 7 frames de preto sao
+  // a unica coisa que da escala ao golpe, e um som de antecipacao os gastaria.
+  { sound: 'whoosh', at: abs('impacto', B.impacto.rasgo[0]), volume: 0.5, reason: 'a mao rasga o quadro' },
+  { sound: 'impact', at: abs('impacto', B.impacto.rasgo[0]), volume: 0.88, reason: 'A MAO RASGA O QUADRO' },
+  { sound: 'subImpact', at: abs('impacto', B.impacto.rasgo[0]), volume: 0.66, reason: 'peso grave sob o mesmo gesto' },
+  { sound: 'rumble', at: abs('impacto', B.impacto.rasgo[0]), volume: 0.26, reason: 'o espaco passa a ter fundo' },
+  { sound: 'hit', at: abs('impacto', B.impacto.eogIn[0]), volume: 0.42, reason: 'EOG entra atras da mao' },
+  { sound: 'swipe', at: abs('impacto', B.impacto.ruasIn[0]), volume: 0.38, reason: 'NAS RUAS avanca' },
+  { sound: 'transitionHit', at: abs('impacto', B.impacto.ruasPass), volume: 0.6, reason: 'NAS RUAS cruza a lente' },
 
-  // --- 02 A QUEBRA — o pico do filme.
-  { sound: 'riser', at: landsOn('riser', abs('quebra', B.quebra.rua)), volume: 0.42, reason: 'tensao subindo ate o corte para a rua' },
-  { sound: 'whoosh', at: abs('quebra', B.quebra.maos[0]), volume: 0.45, reason: 'as maos cruzam rentes a lente' },
-  { sound: 'impact', at: abs('quebra', B.quebra.rua), volume: 0.9, reason: 'CORTE PARA A RUA' },
-  { sound: 'subImpact', at: abs('quebra', B.quebra.rua), volume: 0.7, reason: 'peso grave sob o mesmo corte' },
-  { sound: 'rumble', at: abs('quebra', B.quebra.rua), volume: 0.3, reason: 'a rua passa a ter fundo' },
-  { sound: 'hit', at: abs('quebra', B.quebra.rajada[0]), volume: 0.55, reason: 'segundo golpe da rajada' },
-  { sound: 'hit', at: abs('quebra', B.quebra.rajada[1]), volume: 0.55, reason: 'terceiro golpe da rajada' },
+  // --- 02 A RUA
+  { sound: 'transitionHit', at: TRANSITIONS[0].at, volume: 0.34, reason: 'persiana 01 -> 02' },
+  { sound: 'subImpact', at: S.rua.from, volume: 0.4, reason: 'o Theatro entra' },
+  { sound: 'rumble', at: S.rua.from, volume: 0.24, reason: 'fundo da rua' },
+  { sound: 'whoosh', at: abs('rua', B.rua.wipe[0]), volume: 0.48, reason: 'a mao cruza rentes a lente' },
+  { sound: 'impact', at: abs('rua', B.rua.troca), volume: 0.72, reason: 'TROCA atras da mao' },
+  { sound: 'click', at: abs('rua', B.rua.trioIn[0]) + 14, volume: 0.2, reason: 'metadado de canto' },
 
-  // --- 03 MARCA FIXA — cortes acelerando, depois respiro.
-  { sound: 'transitionHit', at: TRANSITIONS[0].at, volume: 0.34, reason: 'persiana 02 -> 03' },
-  { sound: 'hit', at: abs('marcaFixa', B.marcaFixa.ancora[1]), volume: 0.38, reason: 'a marca trava na posicao de ancora' },
-  { sound: 'textReveal', at: abs('marcaFixa', B.marcaFixa.legendas[0]), volume: 0.26, reason: 'etiqueta de local' },
-  { sound: 'click', at: abs('marcaFixa', B.marcaFixa.trocas[0]), volume: 0.26, reason: 'troca 1' },
-  { sound: 'click', at: abs('marcaFixa', B.marcaFixa.trocas[1]), volume: 0.28, reason: 'troca 2' },
-  { sound: 'swipe', at: abs('marcaFixa', B.marcaFixa.trocas[2]), volume: 0.3, reason: 'troca 3 — o intervalo comeca a fechar' },
-  { sound: 'swipe', at: abs('marcaFixa', B.marcaFixa.trocas[3]), volume: 0.34, reason: 'troca 4' },
-  { sound: 'swipe', at: abs('marcaFixa', B.marcaFixa.trocas[4]), volume: 0.38, reason: 'troca 5' },
-  { sound: 'hit', at: abs('marcaFixa', B.marcaFixa.trocas[5]), volume: 0.5, reason: 'troca 6 — a aceleracao trava aqui' },
-  { sound: 'textReveal', at: abs('marcaFixa', B.marcaFixa.ficha[0]), volume: 0.26, reason: 'a ficha da peca entra no respiro' },
+  // --- 03 ESPECIFICACAO — a cena mais quieta do filme.
+  { sound: 'transitionHit', at: TRANSITIONS[1].at, volume: 0.3, reason: 'persiana 02 -> 03' },
+  { sound: 'textReveal', at: abs('ficha', B.ficha.specA[0]), volume: 0.34, reason: 'MOLETINHO e escrito' },
+  { sound: 'click', at: abs('ficha', B.ficha.conector[0]), volume: 0.22, reason: 'o conector liga os blocos' },
+  { sound: 'textReveal', at: abs('ficha', B.ficha.specB[0]), volume: 0.34, reason: 'CAIMENTO BOXY e escrito' },
+  { sound: 'riser', at: landsOn('riser', abs('marca', B.marca.colisao)), volume: 0.44, reason: 'tensao subindo ate a colisao' },
 
-  // --- 04 NAS RUAS — abertura de escala.
-  { sound: 'whoosh', at: abs('nasRuas', B.nasRuas.maos[0]) - 6, volume: 0.5, reason: 'as maos cruzam a lente e abrem a escala' },
-  { sound: 'subImpact', at: S.nasRuas.from, volume: 0.45, reason: 'a arquitetura chega em tamanho monumental' },
-  { sound: 'rumble', at: S.nasRuas.from, volume: 0.22, reason: 'fundo da rua' },
-  { sound: 'textReveal', at: abs('nasRuas', B.nasRuas.frase[0]), volume: 0.4, reason: 'EOG NAS RUAS entra' },
-  { sound: 'click', at: abs('nasRuas', B.nasRuas.frase[0]) + 9, volume: 0.24, reason: 'a segunda linha da frase' },
-  { sound: 'riser', at: landsOn('riser', abs('drop', B.drop.clarao[0])), volume: 0.44, reason: 'tensao subindo ate o clarao' },
+  // --- 04 A MARCA
+  { sound: 'swipe', at: S.marca.from, volume: 0.34, reason: 'clarao vermelho abrindo o bloco da marca' },
+  { sound: 'whoosh', at: abs('marca', B.marca.fraseIn[0]), volume: 0.4, reason: 'a frase vem de tras da lente' },
+  { sound: 'impact', at: abs('marca', B.marca.colisao), volume: 0.95, reason: 'A COLISAO' },
+  { sound: 'subImpact', at: abs('marca', B.marca.colisao), volume: 0.75, reason: 'peso grave da colisao' },
+  { sound: 'hit', at: abs('marca', B.marca.assinatura[0]), volume: 0.4, reason: 'a assinatura assenta' },
 
   // --- 05 DROP — um golpe, e o silencio.
-  { sound: 'transitionHit', at: TRANSITIONS[2].at, volume: 0.42, reason: 'persiana entregando o apagao' },
+  { sound: 'transitionHit', at: TRANSITIONS[3].at, volume: 0.42, reason: 'persiana entregando o apagao' },
   {
     sound: 'dropImpact',
     at: abs('drop', B.drop.clarao[0]),
-    volume: 0.95,
+    volume: 0.92,
     // A cauda natural tem 72 frames e cobriria justamente o silencio depois do
     // ultimo golpe. Cortada aqui, o filme fecha como foi escrito: golpe, e nada.
     duration: abs('drop', B.drop.fim[0]) - 10 - abs('drop', B.drop.clarao[0]) - 2,
     reason: 'CLARAO — o drop',
   },
-  { sound: 'impact', at: abs('drop', B.drop.clarao[0]), volume: 0.68, reason: 'transiente do mesmo clarao' },
+  { sound: 'impact', at: abs('drop', B.drop.clarao[0]), volume: 0.66, reason: 'transiente do mesmo clarao' },
+  { sound: 'textReveal', at: abs('drop', B.drop.dropIn[0]), volume: 0.26, reason: 'DROP 01' },
   { sound: 'click', at: abs('drop', B.drop.breve[0]), volume: 0.2, reason: 'EM BREVE' },
-  { sound: 'textReveal', at: abs('drop', B.drop.contato[0]), volume: 0.2, reason: 'o contato' },
-  // 0.90, e nao 0.55: medido no arquivo renderizado, o `hit` chegava a 0.21 de
-  // pico contra os 0.69 do corte para a rua. Um fecho a um terco do volume do
-  // meio do filme nao lê como golpe, lê como sobra. Ele cai no silencio, entao
-  // pode ser alto sem competir com nada.
+  // Alto de proposito: ele cai no silencio, entao nao compete com nada. Medido
+  // no render anterior, 0.55 chegava a um terco do pico do filme e lia como
+  // sobra, nao como fecho.
   { sound: 'hit', at: abs('drop', B.drop.fim[0]) - 10, volume: 0.9, reason: 'ultimo golpe — depois dele so ha silencio' },
 ];
 
@@ -397,9 +396,9 @@ export const MUSIC = {
   volume: 0.5,
   /** Curva pretendida quando houver trilha: INTRO -> BUILD -> IMPACTO -> DROP -> FECHO. */
   structure: [
-    { at: S.patrimonio.from, section: 'INTRO' },
-    { at: abs('quebra', B.quebra.virada[0]), section: 'BUILD' },
-    { at: abs('quebra', B.quebra.rua), section: 'IMPACTO' },
+    { at: S.impacto.from, section: 'INTRO' },
+    { at: S.rua.from, section: 'BUILD' },
+    { at: abs('marca', B.marca.colisao), section: 'IMPACTO' },
     { at: abs('drop', B.drop.clarao[0]), section: 'DROP' },
     { at: abs('drop', B.drop.fim[0]) - 10, section: 'FECHO' },
   ],
