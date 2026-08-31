@@ -14,7 +14,7 @@ import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js';
  * angulo, tem parede lateral de verdade e projeta sombra propria.
  *
  * As tres camadas do SVG (letreiro, mao de fundo, mao da frente) viram tres
- * malhas independentes, cada uma com seu material. E o que permite dar bronze
+ * malhas independentes, cada uma com seu material. E o que permite dar pedra
  * ao letreiro e vermelho as maos, e trocar esses materiais ao longo do filme.
  */
 export type LogoLayer = {

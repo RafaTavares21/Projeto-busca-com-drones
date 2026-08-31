@@ -24,9 +24,9 @@ const RAJADA: readonly AssetRole[] = ['torrePreta', 'duplaChevron', 'portaoDia']
 /**
  * CENA 02 — A QUEBRA (4.5s a 7.5s)
  *
- * O bronze perde o metal e assume a cor da marca. Nao e troca de matiz: o
- * material inteiro muda — o especular longo do metal polido vira a superficie
- * fosca da tinta. E a marca saindo do pedestal.
+ * A pedra recebe a cor da marca. Nao e troca de matiz: o material inteiro
+ * muda — o cinza mineral da fachada vira a tinta densa do vermelho EOG, e as
+ * maos acendem dentro do proprio letreiro. E a marca saindo do pedestal.
  *
  * As maos atravessam o quadro e a rua aparece atras delas. E o mesmo recurso de
  * um corte escondido atras de um objeto que passa: um fade informaria que houve

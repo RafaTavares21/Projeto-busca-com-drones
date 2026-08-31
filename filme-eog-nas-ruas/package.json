@@ -12,7 +12,11 @@
     "typecheck": "tsc --noEmit",
     "vetor": "node scripts/vectorize.mjs",
     "assets": "node scripts/prepare-assets.mjs",
-    "fonts": "node scripts/generate-typeface.mjs"
+    "fonts": "node scripts/generate-typeface.mjs",
+    "sfx": "node scripts/generate-sfx.mjs",
+    "validar:audio": "node scripts/validate-audio.mjs",
+    "validar:sync": "node scripts/validate-sync.mjs",
+    "validar": "npm run typecheck && npm run validar:audio && npm run validar:sync"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.8",

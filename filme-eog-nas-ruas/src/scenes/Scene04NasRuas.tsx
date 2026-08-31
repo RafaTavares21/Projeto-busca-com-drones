@@ -2,9 +2,11 @@ import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { Background } from '../components/Background';
 import { FilmTreatment } from '../components/FilmTreatment';
 import { MaskedLine } from '../components/MaskedLine';
+import { MotionBlur } from '../components/MotionBlur';
 import { CameraRig } from '../three/CameraRig';
 import { Lighting } from '../three/Lighting';
 import { PhotoPlate } from '../three/PhotoPlate';
+import { RedHands } from '../three/RedHands';
 import { Stage } from '../three/Stage';
 import { BASE_Z, fillHeightAt } from '../three/stageConfig';
 import { useAsset } from '../assets';
@@ -43,6 +45,14 @@ export const Scene04NasRuas: React.FC = () => {
   const escala = range(abertura, [0, 1], [1.16, 1.04]);
 
   const frase = progress(frame, B.frase[0], B.frase[0] + 20, EASE.expoOut);
+  /**
+   * Borrao apenas no trecho VIOLENTO da entrada, e nada depois.
+   * O `<Trail>` re-renderiza a subarvore uma vez por camada, entao ele custa
+   * caro — e caro e o comportamento certo aqui: uma camera de verdade so borra
+   * enquanto alguma coisa se move rapido. Nos outros 95 frames da cena o
+   * componente nem monta.
+   */
+  const borrao = Math.max(0, 1 - progress(frame, B.frase[0], B.frase[0] + 9, EASE.expoOut));
   const saida = 1 - progress(frame, B.saida[0], B.saida[1], EASE.power2In);
 
   return (
@@ -63,6 +73,15 @@ export const Scene04NasRuas: React.FC = () => {
           />
         ) : null}
 
+        {/* PRIMEIRO PLANO. A mao cruza rentes a lente e sai: a arquitetura
+            aparece atras dela em vez de simplesmente comecar. Uma transicao
+            com um objeto atravessando some; uma que so mistura duas imagens
+            anuncia que houve transicao.
+            A cobertura e deliberadamente PARCIAL — 1.2 do quadro, contra 2.2
+            na cena 02. La a mao precisava esconder um corte e por isso tapava
+            tudo; aqui ela precisa dar profundidade, e um plano que tapa tudo
+            nao e primeiro plano, e uma cortina. */}
+        <RedHands frame={frame} window={B.maos} from="left" coverage={1.2} tilt={11} z={1500} motion="slash" />
       </Stage>
 
       {/* A frase vive na camada DOM: tipografia deste tamanho precisa do
@@ -76,7 +95,7 @@ export const Scene04NasRuas: React.FC = () => {
           pointerEvents: 'none',
         }}
       >
-        <div>
+        <MotionBlur amount={borrao * 0.85} layers={5} lagInFrames={1}>
           {BRAND.tagline.split(' ').map((palavra, i) => (
             <MaskedLine
               key={palavra}
@@ -95,7 +114,7 @@ export const Scene04NasRuas: React.FC = () => {
               {palavra}
             </MaskedLine>
           ))}
-        </div>
+        </MotionBlur>
       </AbsoluteFill>
 
       <FilmTreatment vignette={0.9} />

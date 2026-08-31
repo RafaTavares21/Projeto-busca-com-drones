@@ -68,11 +68,23 @@ export const Scene03MarcaFixa: React.FC = () => {
   // O giro mantem a parede da extrusao visivel; o centro nao se desloca.
   const giro = range(progress(frame, 0, 195, EASE.sineInOut), [0, 1], [0.3, -0.3]);
 
-  const legenda = progress(desde, 4, 16, EASE.power3Out) * (1 - progress(desde, 22, 30, EASE.power2In));
+  /**
+   * As legendas so acompanham as tres primeiras trocas — as que ainda tem
+   * respiro. A partir da quarta o intervalo cai para menos de 20 frames e um
+   * texto que entra e sai nesse tempo nao e lido: e piscada. Deixar a
+   * aceleracao correr muda, so imagem, e o que da a ela a leitura de ritmo.
+   */
+  const legenda =
+    indice <= 2
+      ? progress(desde, 4, 16, EASE.power3Out) * (1 - progress(desde, 22, 30, EASE.power2In))
+      : 0;
 
-  // A ficha da peca aparece uma vez so, no meio da sequencia. Repeti-la a cada
-  // troca a transformaria em ruido; aparecendo uma vez, e informacao.
-  const ficha = progress(frame, 92, 108, EASE.power3Out) * (1 - progress(frame, 150, 168, EASE.power2In));
+  // A ficha da peca aparece uma vez so, no RESPIRO — depois que os cortes
+  // travam no ultimo quadro. Repeti-la a cada troca a transformaria em ruido;
+  // entrando no silencio, ela e a unica coisa que se move, e vira informacao.
+  const ficha =
+    progress(frame, B.ficha[0], B.ficha[1], EASE.power3Out) *
+    (1 - progress(frame, B.saida[0] - 12, B.saida[0], EASE.power2In));
   const saida = 1 - progress(frame, B.saida[0], B.saida[1], EASE.power2In);
 
   return (

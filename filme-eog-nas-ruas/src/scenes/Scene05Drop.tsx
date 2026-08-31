@@ -5,11 +5,12 @@ import { CameraRig } from '../three/CameraRig';
 import { Lighting } from '../three/Lighting';
 import { LogoExtruded } from '../three/LogoExtruded';
 import { Stage } from '../three/Stage';
+import { Typography3D } from '../three/Typography3D';
 import { BASE_Z } from '../three/stageConfig';
 import { EASE } from '../animations/easings';
 import { progress, pulse, range, rad } from '../animations/interpolate';
 import { springAt } from '../animations/springs';
-import { BRAND, COLORS, FONTS, TRACKING } from '../styles/tokens';
+import { BRAND, COLORS, FONTS, LABELS, TRACKING } from '../styles/tokens';
 import { BEATS, HEIGHT } from '../timing';
 
 const B = BEATS.drop;
@@ -21,8 +22,11 @@ const B = BEATS.drop;
  * pausa que da peso ao que vem depois. Entao a assinatura.
  *
  * Depois de vinte segundos de profundidade, o fecho ganha forca por quase
- * abandona-la: o letreiro para de girar e assenta quase de frente, e o resto e
- * tipografia plana. O ultimo frame precisa aguentar ser visto parado.
+ * abandona-la: o letreiro para de girar e assenta quase de frente. A unica
+ * coisa que ainda vem de longe e DROP 01, e ela vem como geometria extrudada,
+ * atravessando o palco de tras para a frente. Todo o resto do texto e plano,
+ * e essa diferenca E a hierarquia. O ultimo frame precisa aguentar ser visto
+ * parado.
  */
 export const Scene05Drop: React.FC = () => {
   const frame = useCurrentFrame();
@@ -37,6 +41,19 @@ export const Scene05Drop: React.FC = () => {
   const giro = range(progress(frame, B.marca[0], B.marca[1] + 16, EASE.expoOut), [0, 1], [0.5, 0.04]);
 
   const regua = progress(frame, B.regua[0], B.regua[1], EASE.power4Out);
+
+  /**
+   * DROP 01 e o unico texto do filme que existe como GEOMETRIA, e nao como
+   * fonte desenhada na tela. Ele chega vindo do fundo do palco e trava: e o
+   * mesmo beat da regua, entao a linha horizontal abre no exato frame em que a
+   * palavra assenta sobre ela.
+   */
+  const drop = springAt(frame, 'snap', { delay: B.regua[0], durationInFrames: B.regua[1] - B.regua[0] });
+  // Profundidade real: a palavra nasce 900 unidades atras e vem ate a frente.
+  const dropZ = range(drop, [0, 1], [-900, 300]);
+  // Velocidade quadro a quadro. O borrao so existe enquanto ela e alta — e
+  // por isso que ele desaparece sozinho quando a palavra para.
+  const dropVel = Math.max(0, 1 - progress(frame, B.regua[0], B.regua[0] + 12, EASE.expoOut));
   const breve = springAt(frame, 'snap', { delay: B.breve[0], durationInFrames: B.breve[1] - B.breve[0] });
   const contato = progress(frame, B.contato[0], B.contato[1], EASE.power3Out);
   const fim = 1 - progress(frame, B.fim[0], B.fim[1], EASE.power2In);
@@ -60,6 +77,26 @@ export const Scene05Drop: React.FC = () => {
           opacity={marca}
           exposure={1.15}
         />
+
+        {drop > 0.001 ? (
+          <Typography3D
+            text={LABELS.drop}
+            size={84}
+            depth={34}
+            tracking={0.16}
+            position={[0, -HEIGHT * 0.075, dropZ]}
+            // Uma inclinacao minima em X entrega a face superior da extrusao a
+            // luz de cima. Sem ela a palavra leria como texto plano.
+            rotation={[rad(-7), range(drop, [0, 1], [rad(-16), 0]), 0]}
+            faceColor={COLORS.white}
+            sideColor="#1A0605"
+            opacity={Math.min(1, drop * 1.6)}
+            // Motion blur so no trecho rapido da entrada.
+            ghosts={dropVel > 0.06 ? 3 : 0}
+            ghostOffset={[0, 0, -140 * dropVel]}
+            ghostOpacity={0.16 * dropVel}
+          />
+        ) : null}
       </Stage>
 
       <AbsoluteFill
@@ -112,6 +149,27 @@ export const Scene05Drop: React.FC = () => {
           <span>{BRAND.handle}</span>
           <span style={{ color: COLORS.ashDim }}>·</span>
           <span>{BRAND.site}</span>
+        </div>
+
+        {/* Nota de rodape da hierarquia: a menor tipografia do filme, e a
+            unica informacao de escassez. Entra depois de tudo, quase junto do
+            corte final — se entrasse antes, disputaria com EM BREVE. */}
+        <div
+          style={{
+            marginTop: 30,
+            display: 'flex',
+            gap: 18,
+            fontFamily: FONTS.grotesque,
+            fontSize: 17,
+            fontWeight: 500,
+            letterSpacing: TRACKING.widest,
+            textTransform: 'uppercase',
+            color: COLORS.ash,
+            opacity: contato * 0.62,
+          }}
+        >
+          <span>{LABELS.limitado}</span>
+          <span>{LABELS.numero}</span>
         </div>
       </AbsoluteFill>
 

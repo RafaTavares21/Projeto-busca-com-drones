@@ -37,9 +37,25 @@ export const COLORS = {
   redHot: '#FF3A24',
   redDeep: '#8A0B04',
 
-  /** Bronze dos ornamentos do Theatro — o logo nasce nesse material. */
-  bronze: '#8E7346',
-  bronzeDark: '#3E3220',
+  /**
+   * Pedra do centro: o logo nasce gravado na fachada, no cinza do proprio
+   * predio, e so depois recebe a cor da marca. Nada aqui sai de PRETO /
+   * BRANCO / VERMELHO — nenhum tom quente entra na paleta.
+   */
+  stone: '#CFCAC2',
+  stoneDark: '#2A2A2A',
+} as const;
+
+/**
+ * Tipografia editorial de apoio. Curta de proposito: cada uma destas linhas
+ * tem que ganhar seu lugar no quadro, e uma lista maior viraria enfeite.
+ * A hierarquia e explicita — a marca fala mais alto, o drop vem em seguida,
+ * e a ficha e a nota de rodape.
+ */
+export const LABELS = {
+  drop: 'DROP 01',
+  limitado: 'PEÇA LIMITADA',
+  numero: '01/01',
 } as const;
 
 export const TYPE = {

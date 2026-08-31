@@ -28,9 +28,9 @@ const B = BEATS.patrimonio;
  * quase 3x sobre o quadro. Nas fotos de 1,6 MP este movimento amoleceria a
  * imagem, e por isso ele acontece aqui e nao em outro lugar.
  *
- * O letreiro nasce em BRONZE, o material dos ornamentos ao redor. E a tese do
- * filme dita em uma imagem: a marca se coloca como patrimonio antes de se
- * declarar rua.
+ * O letreiro nasce em PEDRA, o material da propria fachada — cinza fosco,
+ * dentro da paleta preto/branco/vermelho. E a tese do filme dita em uma
+ * imagem: a marca se coloca como patrimonio antes de se declarar rua.
  */
 export const Scene01Patrimonio: React.FC = () => {
   const frame = useCurrentFrame();
@@ -44,9 +44,9 @@ export const Scene01Patrimonio: React.FC = () => {
 
   const foto = inOut(frame, [B.silencio[1] - 4, B.silencio[1] + 14, 999, 1000]);
 
-  // O bronze entra por escala e opacidade, nao por corte: ele se materializa.
-  const bronze = progress(frame, B.bronzeIn[0], B.bronzeIn[1], EASE.power4Out);
-  const giro = range(progress(frame, B.bronzeGiro[0], B.bronzeGiro[1], EASE.glide), [0, 1], [-0.46, -0.1]);
+  // O relevo entra por escala e opacidade, nao por corte: ele se materializa.
+  const relevo = progress(frame, B.relevoIn[0], B.relevoIn[1], EASE.power4Out);
+  const giro = range(progress(frame, B.relevoGiro[0], B.relevoGiro[1], EASE.glide), [0, 1], [-0.46, -0.1]);
 
   const etiqueta = progress(frame, B.etiqueta[0], B.etiqueta[1], EASE.power3Out);
 
@@ -58,7 +58,7 @@ export const Scene01Patrimonio: React.FC = () => {
         <CameraRig position={[0, 0, BASE_Z]} handheld={3} seed="patrimonio" />
         <Lighting
           // Luz de museu: uma fonte alta e dura sobre o objeto, quase sem
-          // preenchimento. O bronze precisa de especular para existir.
+          // preenchimento. O relevo existe pela sombra, nao pelo brilho.
           key={2.2}
           fill={0.14}
           rim={1.4}
@@ -79,15 +79,18 @@ export const Scene01Patrimonio: React.FC = () => {
           />
         ) : null}
 
-        {/* O bronze ocupa o terco inferior, fora do rosto e do corpo do
-            modelo: e uma placa comemorativa, nao um adesivo no peito. */}
+        {/* Placa comemorativa, e nao adesivo: encostada na margem esquerda,
+            sobre o embasamento escuro da fachada. Duas razoes obrigam esta
+            posicao — a peca que o modelo veste JA carrega a estampa do logo, e
+            repetir a marca sobre o peito criaria duas versoes dela brigando no
+            mesmo lugar; e o cinza da pedra so existe contra fundo escuro. */}
         <LogoExtruded
-          height={range(bronze, [0, 1], [150, 330])}
-          position={[-WIDTH * 0.12, -HEIGHT * 0.3, 260]}
+          height={range(relevo, [0, 1], [110, 215])}
+          position={[-WIDTH * 0.235, -HEIGHT * 0.19, 260]}
           rotation={[rad(-8), giro, 0]}
           finish={0}
-          opacity={bronze}
-          exposure={0.9 + bronze * 0.4}
+          opacity={relevo}
+          exposure={0.9 + relevo * 0.4}
         />
       </Stage>
 
