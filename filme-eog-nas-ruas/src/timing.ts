@@ -375,7 +375,11 @@ export const SOUND_CUES: readonly SoundCue[] = [
   { sound: 'impact', at: abs('drop', B.drop.clarao[0]), volume: 0.68, reason: 'transiente do mesmo clarao' },
   { sound: 'click', at: abs('drop', B.drop.breve[0]), volume: 0.2, reason: 'EM BREVE' },
   { sound: 'textReveal', at: abs('drop', B.drop.contato[0]), volume: 0.2, reason: 'o contato' },
-  { sound: 'hit', at: abs('drop', B.drop.fim[0]) - 10, volume: 0.55, reason: 'ultimo golpe — depois dele so ha silencio' },
+  // 0.90, e nao 0.55: medido no arquivo renderizado, o `hit` chegava a 0.21 de
+  // pico contra os 0.69 do corte para a rua. Um fecho a um terco do volume do
+  // meio do filme nao lê como golpe, lê como sobra. Ele cai no silencio, entao
+  // pode ser alto sem competir com nada.
+  { sound: 'hit', at: abs('drop', B.drop.fim[0]) - 10, volume: 0.9, reason: 'ultimo golpe — depois dele so ha silencio' },
 ];
 
 /**
