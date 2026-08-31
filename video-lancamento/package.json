@@ -1,0 +1,42 @@
+{
+  "name": "eog-drip-drop-01",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Filme vertical 9:16 de lancamento — EOG DRIP / DROP 01",
+  "scripts": {
+    "dev": "remotion studio",
+    "studio": "remotion studio",
+    "build": "remotion render DropOne out/eog-drip-drop-01.mp4",
+    "build:hq": "remotion render DropOne out/eog-drip-drop-01-hq.mp4 --crf=14",
+    "still": "remotion still DropOne out/frame.png",
+    "upgrade": "remotion upgrade",
+    "typecheck": "tsc --noEmit",
+    "fonts": "node scripts/generate-typeface.mjs",
+    "assets": "node scripts/prepare-assets.mjs"
+  },
+  "dependencies": {
+    "@react-three/drei": "^10.7.8",
+    "@react-three/fiber": "^9.7.0",
+    "@remotion/cli": "^4.0.518",
+    "@remotion/google-fonts": "^4.0.518",
+    "@remotion/motion-blur": "^4.0.518",
+    "@remotion/player": "^4.0.518",
+    "@remotion/shapes": "^4.0.518",
+    "@remotion/three": "^4.0.518",
+    "gsap": "^3.15.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "remotion": "^4.0.518",
+    "three": "^0.185.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.5",
+    "@types/three": "^0.185.4",
+    "opentype.js": "^2.0.0",
+    "sharp": "^0.35.4",
+    "typescript": "^7.0.2"
+  },
+  "main": "src/index.ts"
+}
