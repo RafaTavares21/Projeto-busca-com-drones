@@ -1,7 +1,6 @@
 import { AbsoluteFill, Img, useCurrentFrame } from 'remotion';
 import { Background } from '../components/Background';
 import { FilmTreatment } from '../components/FilmTreatment';
-import { MaskedLine } from '../components/MaskedLine';
 import { useAsset } from '../assets';
 import { EASE } from '../animations/easings';
 import { progress, pulse, range } from '../animations/interpolate';
@@ -61,40 +60,26 @@ export const Scene05FinalDrop: React.FC = () => {
         }}
       >
         {/* A estampa entra como marca — o mesmo grafismo que abriu o filme. */}
+        {/* O letreiro da marca fecha o filme no tamanho de assinatura. Nao ha
+            versao redesenhada em fonte: a marca tem letreiro proprio. */}
         {print ? (
           <Img
             src={print.url}
             style={{
-              width: 300,
-              marginBottom: 74,
-              opacity: markOpacity,
+              width: 620,
+              marginBottom: 40,
+              opacity: markOpacity * wordMask,
               transform: `scale(${mark.toFixed(4)})`,
             }}
           />
         ) : null}
-
-        {BRAND.words.map((word, i) => (
-          <MaskedLine
-            key={word}
-            reveal={wordMask * 1.6 - i * 0.32}
-            fontSize={226}
-            lineHeight={0.98}
-            textStyle={{
-              fontFamily: FONTS.display,
-              letterSpacing: TRACKING.tight,
-              color: COLORS.white,
-            }}
-          >
-            {word}
-          </MaskedLine>
-        ))}
 
         {/* Regra fina: separa a marca dos metadados do lancamento. */}
         <div
           style={{
             width: 470,
             height: 1,
-            marginTop: 76,
+            marginTop: 30,
             background: COLORS.ashDim,
             transform: `scaleX(${rule.toFixed(4)})`,
           }}

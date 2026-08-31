@@ -109,11 +109,13 @@ export const Typography3D: React.FC<Typography3DProps> = ({
 
     const side = new THREE.MeshStandardMaterial({
       color: sideColor,
-      roughness: 0.42,
-      metalness: 0.62,
-      // Reflete mais o ambiente que a face: e assim que o rebatedor vermelho
-      // do ambiente procedural aparece nas paredes da extrusao.
-      envMapIntensity: 2.1,
+      // Parede fosca, quase sem metal e com pouco ambiente. Metal alto somado a
+      // reflexo forte transformava o vermelho num brilho claro e lavado — o
+      // oposto do vermelho denso que a marca usa. Aqui a extrusao lê como
+      // material pintado: cor cheia, sem realce especular correndo pela aresta.
+      roughness: 0.66,
+      metalness: 0.06,
+      envMapIntensity: 0.45,
       emissive: sideEmissive ? new THREE.Color(sideEmissive) : new THREE.Color('#000000'),
       emissiveIntensity: sideEmissive ? sideEmissiveIntensity : 0,
       transparent,

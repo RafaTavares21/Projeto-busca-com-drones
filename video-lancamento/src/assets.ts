@@ -40,7 +40,7 @@ export const ASSETS: Record<AssetRole, AssetSpec> = {
     role: 'A peca, costas — revelada atras da mao',
   },
   productWorn: {
-    src: 'assets/product-back.jpg',
+    src: 'assets/product-worn.jpg',
     kind: 'photo',
     role: 'A peca vestida — o caimento e o corpo, na cena de detalhes',
   },

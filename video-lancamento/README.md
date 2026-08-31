@@ -45,11 +45,14 @@ Os arquivos originais ficam intactos em `public/assets/source/`. O comando
 
 | papel | arquivo | o que é | função na narrativa |
 |---|---|---|---|
-| `productFront` | `shirt-front.png` | a peça, frente | abre o reveal da cena 02 |
-| `productBack` | `shirt-back.png` | a peça, costas | revelada atrás da mão, no pico do gesto |
-| `productWorn` | `product-back.jpg` | a peça vestida | o caimento e o corpo, na cena de detalhes |
+| `productFront` | `shirt-front.png` | a peça, frente, recortada | abre o reveal da cena 02 |
+| `productBack` | `shirt-back.png` | a peça, costas, recortada | revelada atrás da mão, no pico do gesto |
+| `productWorn` | `product-worn.jpg` | a peça vestida | o caimento e o corpo, na cena de detalhes |
 | `printMark` | `print-front.png` | a estampa isolada | assina o último frame |
 | `hands` | `hands.png` | as mãos vermelhas | gesto de impacto, máscara e transição |
+
+As três primeiras saem do poster de campanha (`source/poster.jpg`), onde as
+peças estão em flat-lay isolado e o modelo aparece de corpo inteiro.
 
 ### Trocar a peça do próximo drop
 
@@ -86,13 +89,17 @@ proporção. O corte usa o **canal mais forte** do pixel, não a luminância
 perceptual — as mãos são vermelho saturado, que tem luminância baixa e seria
 comido por um corte perceptual.
 
-**As peças** (`shirt-front`, `shirt-back`) foram fotografadas apoiadas sobre o
-modelo, então um recorte retangular traz junto jeans, degraus e a mão dele.
-Chavear não resolve: a peça é preta, parte do fundo também é, e a estampa é
-branca — não existe limiar que separe os três. A solução é óptica em vez de
-geométrica: uma **queda suave de alfa nas bordas** faz o contexto se dissolver
-no preto do filme, e o que sobra é a peça. Numa composição de fundo preto isso
-lê como iluminação, não como recorte.
+**As peças** (`shirt-front`, `shirt-back`) vêm de um PNG que a marca forneceu
+já recortado, com canal alfa. `splitCutout()` apenas fatia cada peça e descarta
+a cabeça do modelo que aparece entre as duas.
+
+Vale registrar por que o recorte não é feito por código. Tentei limiar de
+luminância, variância local, componente conectado e restrição geométrica por
+linha. Nenhum funciona nessas fotos, e a varredura da borda explica: a peça é
+preta, o fundo é uma persiana preta, e a transição entre os dois vai de 2 a 48
+em luminância sem nenhum degrau. **Não existe contorno na imagem para um
+algoritmo encontrar.** Um recorte feito à mão, no arquivo de origem, é a
+solução certa — e é a que está em uso.
 
 ---
 
@@ -175,10 +182,11 @@ como o mesmo sistema. Sem ela seriam duas legendas soltas.
 
 | # | Cena | Tempo | Conteúdo |
 |---|------|-------|----------|
-| 01 | IMPACT | 0 – 2.5 s | Silêncio, a mão rasga o quadro, EOG chega, DRIP passa rente à lente |
+| 01 | IMPACT | 0 – 2.5 s | Silêncio, a mão rasga o quadro, o letreiro passa rente à lente |
 | 02 | PRODUCT REVEAL | 2.5 – 6 s | A peça de frente → mão atravessa → as costas, no pico do gesto |
 | 03 | DETAILS | 6 – 9 s | Ficha técnica em tipografia editorial no espaço negativo |
-| 04 | EOG DRIP | 9 – 12 s | Colisão em profundidades opostas + assinatura |
+
+| 04 | EOG DRIP | 9 – 12 s | O letreiro extrudado emerge do fundo e colide com a mão |
 | 05 | FINAL DROP | 12 – 15 s | Flash vermelho, silêncio, lockup, DROP 01 / COMING SOON |
 
 Cada cena também é registrada como composição isolada (`Scene01-Impact`, …)

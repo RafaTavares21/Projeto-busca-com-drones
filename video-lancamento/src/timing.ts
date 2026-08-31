@@ -81,11 +81,11 @@ export const BEATS = {
   details: {
     /** A fotografia recompoe: sobe e abre espaco para o texto. */
     plateSettle: [0, 20] as const,
-    /** PREMIUM COTTON. */
+    /** ALGODAO PREMIUM. */
     specA: [8, 30] as const,
     /** A mao pequena que liga uma informacao a outra. */
     connector: [28, 44] as const,
-    /** OVERSIZED FIT. */
+    /** CAIMENTO AMPLO. */
     specB: [34, 56] as const,
     /** Os elementos se reduzem e preparam a entrada da marca. */
     reduce: [64, 82] as const,

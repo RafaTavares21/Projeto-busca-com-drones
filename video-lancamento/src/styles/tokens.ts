@@ -10,7 +10,9 @@ export const BRAND = {
   name: 'EOG DRIP',
   words: ['EOG', 'DRIP'] as const,
   drop: 'DROP 01',
-  status: 'COMING SOON',
+  status: 'EM BREVE',
+  /** A assinatura da propria marca, tirada do poster de campanha. */
+  tagline: 'EOG NAS RUAS',
 } as const;
 
 export const COLORS = {
@@ -31,8 +33,8 @@ export const COLORS = {
   red: '#C81208',
   /** Vermelho de brilho — luzes, flashes, emissivos. */
   redHot: '#FF2A17',
-  /** Vermelho de sombra — laterais extrudadas, degrades. */
-  redDeep: '#6E0400',
+  /** Vermelho das laterais extrudadas. Forte e escuro, nunca apagado. */
+  redDeep: '#8A0B04',
 } as const;
 
 /** Escala tipografica em px, pensada para o quadro de 1080x1920. */

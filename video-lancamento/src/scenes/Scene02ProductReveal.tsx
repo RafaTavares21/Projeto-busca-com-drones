@@ -14,7 +14,7 @@ import { useAsset } from '../assets';
 import { EASE } from '../animations/easings';
 import { inOut, progress, rad, range } from '../animations/interpolate';
 import { springAt } from '../animations/springs';
-import { COLORS } from '../styles/tokens';
+import { BRAND, COLORS } from '../styles/tokens';
 import { BEATS, HEIGHT } from '../timing';
 
 const B = BEATS.productReveal;
@@ -136,7 +136,7 @@ export const Scene02ProductReveal: React.FC = () => {
 
       <TextOverlay
         topLeft={{ text: 'Drop 01 / Peça 01', reveal: meta }}
-        bottomRight={{ text: 'EOG DRIP', reveal: meta }}
+        bottomRight={{ text: BRAND.tagline, reveal: meta }}
       />
 
       <FilmTreatment vignette={0.8} />

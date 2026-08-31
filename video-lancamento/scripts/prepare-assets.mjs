@@ -86,71 +86,55 @@ const cutout = async (name, { lo, hi, pad = 8 } = {}) => {
 };
 
 /**
- * Recorta uma peca da foto de campanha e a prepara como PLACA.
+ * Fatia uma peca de um recorte que ja veio com canal alfa.
  *
- * As duas pecas foram fotografadas apoiadas sobre o modelo, entao um recorte
- * retangular traz junto jeans, degraus e a mao dele. Chavear nao resolve: a
- * peca e preta, parte do fundo tambem e, e a estampa e branca — nao existe
- * limiar que separe os tres.
+ * A marca forneceu as duas pecas ja recortadas num unico PNG. Isso substitui
+ * qualquer tentativa de segmentar automaticamente — e vale registrar por que
+ * era impossivel: na foto original a peca e preta, o fundo e uma persiana
+ * preta, e a varredura da borda vai de 2 a 48 em luminancia sem nenhum degrau.
+ * Nao havia contorno na imagem para um algoritmo achar.
  *
- * A solucao e otica em vez de geometrica: uma queda suave de alfa nas bordas
- * faz o contexto se dissolver no preto do filme, e o que sobra e a peca. Numa
- * composicao de fundo preto isso lê como iluminacao, nao como recorte.
+ * Aqui o trabalho e so separar: recorta a peca pedida, descarta a cabeca do
+ * modelo que aparece entre as duas, e corta a moldura transparente para que a
+ * peca passe a ser posicionada pela propria proporcao.
  */
-const plate = async (name, box, { falloff = 0.38, contrast = 1.1 } = {}) => {
-  const src = path.join(SRC, 'campaign-post.jpg');
+const splitCutout = async (name, source, box) => {
+  const src = path.join(SRC, source);
   const dest = path.join(OUT, `${name}.png`);
 
-  const cropped = await sharp(src)
-    .extract(box)
-    .linear(contrast, -(128 * contrast) + 128)
-    .ensureAlpha()
-    .raw()
-    .toBuffer({ resolveWithObject: true });
+  // Dois passes de proposito: o sharp aplica `trim` antes de `extract` dentro
+  // do mesmo pipeline, entao encadear os dois recortaria a moldura da imagem
+  // inteira primeiro e a caixa cairia fora dos limites.
+  const sliced = await sharp(src).extract(box).png().toBuffer();
+  const out = await sharp(sliced).trim({ threshold: 2 }).png({ compressionLevel: 9 }).toFile(dest);
 
-  const { data, info } = cropped;
-  const { width: w, height: h } = info;
-
-  for (let y = 0; y < h; y++) {
-    for (let x = 0; x < w; x++) {
-      // Distancia normalizada ate a borda mais proxima, em cada eixo.
-      const dx = Math.min(x, w - 1 - x) / (w * falloff);
-      const dy = Math.min(y, h - 1 - y) / (h * falloff);
-      const edge = Math.min(1, Math.min(dx, dy));
-      // smoothstep: a borda nao pode ter emenda visivel.
-      const a = edge * edge * (3 - 2 * edge);
-      const i = (y * w + x) * 4;
-      data[i + 3] = Math.round(255 * a);
-    }
-  }
-
-  const out = await sharp(data, { raw: { width: w, height: h, channels: 4 } })
-    .png({ compressionLevel: 9 })
-    .toFile(dest);
-
-  console.log(`  ${name}.png  ${out.width}x${out.height}  (placa da foto de campanha)`);
+  console.log(`  ${name}.png  ${out.width}x${out.height}  (fatiado do recorte da marca)`);
 };
 
 /** A foto do produto nao e chaveada: ela e uma fotografia, nao uma arte. */
-const photo = async (name) => {
-  const src = path.join(SRC, `${name}.jpg`);
+const photo = async (name, source, box) => {
+  const src = path.join(SRC, source);
   const dest = path.join(OUT, `${name}.jpg`);
   const meta = await sharp(src).metadata();
 
+  const pipeline = sharp(src);
+  if (box) pipeline.extract(box);
+
   // Nitidez leve: a foto e ampliada em cena e a ampliacao come micro-contraste.
-  const info = await sharp(src).sharpen({ sigma: 0.6 }).jpeg({ quality: 94 }).toFile(dest);
+  const info = await pipeline.sharpen({ sigma: 0.6 }).jpeg({ quality: 95 }).toFile(dest);
   console.log(`  ${name}.jpg  ${info.width}x${info.height}  (origem ${meta.width}x${meta.height})`);
 };
 
 console.log('Preparando assets do produto...');
 await cutout('print-front', { lo: 0.05, hi: 0.20 });
 await cutout('hands', { lo: 0.04, hi: 0.16 });
-await photo('product-back');
+await photo('product-worn', 'poster.jpg', { left: 40, top: 596, width: 812, height: 336 });
 
-// As duas pecas, recortadas da foto de campanha do @eog.drip.
-// As caixas foram medidas na foto ja sem a interface do Instagram; o offset
-// vertical de 394px recoloca cada uma nas coordenadas do arquivo original.
-const UI_OFFSET = 394;
-await plate('shirt-front', { left: 188, top: 672 + UI_OFFSET, width: 432, height: 452 });
-await plate('shirt-back', { left: 716, top: 672 + UI_OFFSET, width: 436, height: 446 });
+// As duas pecas vem do poster de campanha, e nao do post: la elas estao
+// fotografadas em flat-lay isolado, sem os jeans e a mao do modelo por cima,
+// o que da uma silhueta limpa. O preco e resolucao — ver as notas do README.
+// A cabeca do modelo aparece entre as duas pecas, a partir de y=244. As caixas
+// param antes disso, entao cada peca sai limpa sem precisar mascarar nada.
+await splitCutout('shirt-front', 'shirts-cutout.png', { left: 88, top: 0, width: 300, height: 244 });
+await splitCutout('shirt-back', 'shirts-cutout.png', { left: 478, top: 0, width: 292, height: 236 });
 console.log('Concluido.');

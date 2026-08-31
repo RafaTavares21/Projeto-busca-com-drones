@@ -8,7 +8,7 @@ import { Lighting } from '../three/Lighting';
 import { Particles } from '../three/Particles';
 import { RedHandTransition, handCoverage } from '../three/RedHandTransition';
 import { Stage } from '../three/Stage';
-import { Typography3D } from '../three/Typography3D';
+import { Logo3D } from '../three/Logo3D';
 import { BASE_Z } from '../three/stageConfig';
 import { EASE } from '../animations/easings';
 import { inOut, progress, pulse, range } from '../animations/interpolate';
@@ -24,9 +24,9 @@ const B = BEATS.impact;
  * onde vir — impacto e uma relacao, nao um valor absoluto.
  *
  * Entao a mao vermelha rasga o quadro. Ela nao e um efeito: e o elemento
- * grafico da propria peca, e e o gesto dela que carrega a camera junto. EOG
- * chega na esteira da mao; DRIP vem depois, em outra escala e outra
- * profundidade, e passa rente a lente.
+ * grafico da propria peca, e e o gesto dela que carrega a camera junto. O
+ * letreiro da marca chega na esteira da mao, vindo do fundo do espaco, e passa
+ * rente a lente.
  *
  * A sensacao de escala nao vem de escalar o texto: vem de mover a geometria
  * em profundidade a velocidade constante e deixar a perspectiva trabalhar.
@@ -44,18 +44,15 @@ export const Scene01Impact: React.FC = () => {
   // --- Mao -----------------------------------------------------------------
   const slash = handCoverage(frame, B.handSlash, 'slash');
 
-  // --- EOG -----------------------------------------------------------------
-  // Chega quase instantaneamente e assenta. A palavra curta pede impacto seco.
-  const eog = progress(frame, B.eogIn[0], B.eogIn[1], EASE.impact);
-  const eogZ = range(eog, [0, 1], [-2600, -120]);
-  const eogOpacity = inOut(frame, [B.eogIn[0], B.eogIn[0] + 4, B.dripIn[0] + 10, B.dripIn[0] + 22]);
-
-  // --- DRIP ----------------------------------------------------------------
+  // --- O letreiro ----------------------------------------------------------
   // Velocidade constante em Z, atravessando o plano da camera. A aceleracao
-  // aparente e puramente perspectiva.
-  const dripZ = range(frame, [B.dripIn[0], B.dripIn[1]], [-1900, BASE_Z + 700]);
-  const dripOpacity = inOut(frame, [B.dripIn[0], B.dripIn[0] + 5, B.dripPass, B.dripPass + 5]);
-  const dripBlur = progress(frame, B.dripIn[0] + 8, B.dripPass, EASE.power2In);
+  // aparente e puramente perspectiva: o objeto nao acelera, a lente e que o
+  // aproxima.
+  const logoZ = range(frame, [B.eogIn[0], B.dripIn[1]], [-3000, BASE_Z + 620]);
+  const logoOpacity = inOut(frame, [B.eogIn[0], B.eogIn[0] + 6, B.dripPass, B.dripPass + 6]);
+  const logoBlur = progress(frame, B.eogIn[1], B.dripPass, EASE.power2In);
+  // Giro lento e curto: sem ele a extrusao fica de frente e some.
+  const logoSpin = range(frame, [B.eogIn[0], B.dripIn[1]], [0.34, -0.12], EASE.glide);
 
   const pass = pulse(frame, B.dripPass - 8, B.dripPass + 8, 0.5);
   const heat = Math.max(slash * 0.8, pass);
@@ -104,29 +101,17 @@ export const Scene01Impact: React.FC = () => {
 
         <Glow position={[0, 0, -800]} size={2600} color={COLORS.redHot} intensity={heat * 0.34} />
 
-        <Typography3D
-          text="EOG"
-          size={430}
-          depth={160}
-          position={[0, 40, eogZ]}
-          rotation={[0, 0.05, 0]}
-          opacity={eogOpacity}
-          faceColor={COLORS.white}
-          sideColor="#0E0E0E"
-        />
-
-        <Typography3D
-          text="DRIP"
-          size={330}
-          depth={190}
-          position={[0, -60, dripZ]}
-          rotation={[0, -0.04, 0.01]}
-          opacity={dripOpacity}
-          faceColor={COLORS.white}
-          sideColor={COLORS.redDeep}
-          ghosts={dripBlur > 0.05 ? 5 : 0}
-          ghostOffset={[0, 0, -340]}
-          ghostOpacity={0.1 * dripBlur}
+        <Logo3D
+          height={620}
+          position={[0, 0, logoZ]}
+          rotation={[0, logoSpin, -0.02]}
+          opacity={logoOpacity}
+          depth={110}
+          layers={26}
+          exposure={1.05}
+          ghosts={logoBlur > 0.05 ? 5 : 0}
+          ghostOffset={[0, 0, -300]}
+          ghostOpacity={0.09 * logoBlur}
         />
 
         {/* A mao passa em primeiro plano, na frente de tudo. */}

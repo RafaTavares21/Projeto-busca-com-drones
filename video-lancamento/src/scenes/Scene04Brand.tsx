@@ -7,12 +7,13 @@ import { Glow } from '../three/Glow';
 import { Lighting } from '../three/Lighting';
 import { Particles } from '../three/Particles';
 import { Stage } from '../three/Stage';
-import { Typography3D } from '../three/Typography3D';
+import { Logo3D } from '../three/Logo3D';
+import { RedHandTransition } from '../three/RedHandTransition';
 import { BASE_Z } from '../three/stageConfig';
 import { EASE } from '../animations/easings';
 import { inOut, progress, pulse, range } from '../animations/interpolate';
 import { springAt } from '../animations/springs';
-import { COLORS, FONTS, TRACKING } from '../styles/tokens';
+import { BRAND, COLORS, FONTS, TRACKING } from '../styles/tokens';
 import { BEATS } from '../timing';
 
 const B = BEATS.brand;
@@ -20,29 +21,27 @@ const B = BEATS.brand;
 /**
  * CENA 04 — EOG DRIP (9s a 12s)
  *
- * As duas palavras chegam de profundidades opostas: EOG emerge do fundo do
- * espaco, DRIP vem de tras da lente. Elas se cruzam no plano da camera no
- * frame da colisao, e e esse encontro — nao um corte — que dispara a
- * trepidacao, o clarao e os estilhacos.
+ * O letreiro da marca emerge do fundo do espaco, extrudado, e cresce ate
+ * dominar o quadro. A mao vermelha vem da direcao oposta, de tras da lente, e
+ * as duas se encontram no plano da camera: e esse encontro — nao um corte —
+ * que dispara a trepidacao, o clarao e os estilhacos.
  *
- * Nada desliza horizontalmente. A tridimensionalidade vem da camera e da
- * profundidade real de cada palavra, e as duas tem massa diferente de
- * proposito: DRIP e mais extrudada, porque e a que chega por cima.
+ * Os dois elementos sao a mesma identidade vista de dois jeitos: o letreiro
+ * traz as maos dentro dele, e a mao que colide e a mesma, isolada. Nada
+ * desliza horizontalmente; a tridimensionalidade vem da camera e da
+ * profundidade real de cada elemento.
  */
 export const Scene04Brand: React.FC = () => {
   const frame = useCurrentFrame();
 
-  const eogIn = springAt(frame, 'heavy', {
+  const logoIn = springAt(frame, 'heavy', {
     delay: B.eogIn[0],
     durationInFrames: B.eogIn[1] - B.eogIn[0],
   });
-  const eogZ = range(eogIn, [0, 1], [-3300, -200]);
-
-  const dripIn = springAt(frame, 'heavy', {
-    delay: B.dripIn[0],
-    durationInFrames: B.dripIn[1] - B.dripIn[0],
-  });
-  const dripZ = range(dripIn, [0, 1], [BASE_Z * 0.9, 220]);
+  const logoZ = range(logoIn, [0, 1], [-3200, -150]);
+  // Giro que atravessa a colisao: e ele que mantem a parede da extrusao visivel
+  // depois do impacto, em vez de deixar o letreiro chapado de frente.
+  const logoSpin = range(progress(frame, 0, 90, EASE.glide), [0, 1], [0.62, -0.28]);
 
   const shock = pulse(frame, B.shock[0], B.shock[1], 0.12);
   const flash = pulse(frame, B.collision - 2, B.collision + 10, 0.16);
@@ -88,41 +87,38 @@ export const Scene04Brand: React.FC = () => {
         />
 
         <group rotation={[0, driftRotY, 0]}>
-          <Typography3D
-            text="EOG"
-            size={286}
-            depth={120}
-            position={[0, 178, eogZ]}
+          <Logo3D
+            height={742}
+            position={[0, 40, logoZ]}
+            rotation={[0, logoSpin, 0]}
             opacity={inOut(frame, [B.eogIn[0], B.eogIn[0] + 8, B.exit[0], B.exit[1]])}
-            faceColor={COLORS.white}
-            sideColor="#0F0F0F"
-            ghosts={eogIn < 0.9 ? 4 : 0}
-            ghostOffset={[0, 0, -280]}
-            ghostOpacity={0.09 * (1 - eogIn)}
-          />
-
-          <Typography3D
-            text="DRIP"
-            size={286}
-            depth={176}
-            position={[0, -142, dripZ]}
-            opacity={inOut(frame, [B.dripIn[0], B.dripIn[0] + 8, B.exit[0], B.exit[1]])}
-            faceColor={COLORS.white}
-            sideColor={COLORS.redDeep}
-            sideEmissive={flash > 0.05 ? COLORS.red : undefined}
-            sideEmissiveIntensity={flash * 1.6}
-            ghosts={dripIn < 0.9 ? 4 : 0}
-            ghostOffset={[0, 0, 300]}
-            ghostOpacity={0.09 * (1 - dripIn)}
+            depth={140}
+            layers={34}
+            exposure={0.98 + flash * 0.45}
+            ghosts={logoIn < 0.9 ? 4 : 0}
+            ghostOffset={[0, 0, -320]}
+            ghostOpacity={0.09 * (1 - logoIn)}
           />
         </group>
+
+        {/* A mao vem da direcao oposta, de tras da lente, e colide com o
+            letreiro. Os dois sao a mesma identidade vista de dois jeitos. */}
+        <RedHandTransition
+          frame={frame}
+          window={[B.dripIn[0], B.dripIn[0] + 32]}
+          from="right"
+          coverage={1.2}
+          tilt={-16}
+          z={1250}
+          motion="slash"
+        />
       </Stage>
 
       {/* A assinatura: depois do choque, a marca escrita por extenso, calma. */}
       <AbsoluteFill style={{ alignItems: 'center' }}>
         <MaskedLine
           reveal={signatureMask}
-          fontSize={40}
+          fontSize={26}
           lineHeight={1.5}
           travel={140}
           style={{
@@ -130,19 +126,19 @@ export const Scene04Brand: React.FC = () => {
             // da cena e nao participa do fluxo, entao centralizar as duas
             // juntas as sobreporia.
             position: 'absolute',
-            top: 1360,
+            top: 1430,
             transform: `translateX(${(driftX * -0.3).toFixed(1)}px)`,
           }}
           textStyle={{
-            fontFamily: FONTS.editorial,
-            fontStyle: 'italic',
-            fontWeight: 500,
-            letterSpacing: TRACKING.wide,
-            color: COLORS.bone,
+            fontFamily: FONTS.grotesque,
+            fontWeight: 600,
+            letterSpacing: TRACKING.widest,
+            textTransform: 'uppercase',
+            color: COLORS.ash,
             opacity: signature,
           }}
         >
-          eog drip
+          {BRAND.tagline}
         </MaskedLine>
       </AbsoluteFill>
 

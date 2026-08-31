@@ -96,7 +96,7 @@ export const Scene03Details: React.FC = () => {
           gap: 46,
         }}
       >
-        <InformationContainer eyebrow="Material" lines={['PREMIUM', 'COTTON']} state={specA} />
+        <InformationContainer eyebrow="Material" lines={['ALGODÃO', 'PREMIUM']} state={specA} />
 
         {/* O conector: a mao da propria peca, pequena, ligando os dois blocos. */}
         {hands ? (
@@ -114,7 +114,7 @@ export const Scene03Details: React.FC = () => {
           </div>
         ) : null}
 
-        <InformationContainer eyebrow="Modelagem" lines={['OVERSIZED', 'FIT']} state={specB} />
+        <InformationContainer eyebrow="Modelagem" lines={['CAIMENTO', 'AMPLO']} state={specB} />
       </AbsoluteFill>
 
       <TextOverlay topLeft={{ text: 'Especificação', reveal: meta }} topRight={{ text: '01 / 02', reveal: meta }} />
