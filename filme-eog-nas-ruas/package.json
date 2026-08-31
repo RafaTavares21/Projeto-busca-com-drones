@@ -1,0 +1,40 @@
+{
+  "name": "eog-nas-ruas",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Filme de campanha EOG DRIP — EOG NAS RUAS",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "remotion studio",
+    "studio": "remotion studio",
+    "build": "remotion render EogNasRuas out/eog-nas-ruas.mp4",
+    "build:hq": "remotion render EogNasRuas out/eog-nas-ruas-hq.mp4 --crf=14",
+    "typecheck": "tsc --noEmit",
+    "vetor": "node scripts/vectorize.mjs",
+    "assets": "node scripts/prepare-assets.mjs",
+    "fonts": "node scripts/generate-typeface.mjs"
+  },
+  "dependencies": {
+    "@react-three/drei": "^10.7.8",
+    "@react-three/fiber": "^9.7.0",
+    "@remotion/cli": "^4.0.519",
+    "@remotion/motion-blur": "^4.0.519",
+    "@remotion/shapes": "^4.0.519",
+    "@remotion/three": "^4.0.519",
+    "gsap": "^3.15.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "remotion": "^4.0.519",
+    "three": "^0.185.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.5",
+    "@types/three": "^0.185.4",
+    "opentype.js": "^2.0.0",
+    "potrace": "^2.1.8",
+    "sharp": "^0.35.4",
+    "typescript": "^7.0.2"
+  }
+}
