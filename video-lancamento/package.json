@@ -1,17 +1,18 @@
 {
-  "name": "never-broke-again-drop-01",
+  "name": "eog-drip-drop-01",
   "version": "1.0.0",
   "private": true,
-  "description": "Comercial vertical 9:16 de lancamento — NEVER BROKE AGAIN / DROP 01",
+  "description": "Filme vertical 9:16 de lancamento — EOG DRIP / DROP 01",
   "scripts": {
     "dev": "remotion studio",
     "studio": "remotion studio",
-    "build": "remotion render DropOne out/never-broke-again-drop-01.mp4",
-    "build:hq": "remotion render DropOne out/never-broke-again-drop-01-hq.mp4 --crf=14",
+    "build": "remotion render DropOne out/eog-drip-drop-01.mp4",
+    "build:hq": "remotion render DropOne out/eog-drip-drop-01-hq.mp4 --crf=14",
     "still": "remotion still DropOne out/frame.png",
     "upgrade": "remotion upgrade",
     "typecheck": "tsc --noEmit",
-    "fonts": "node scripts/generate-typeface.mjs"
+    "fonts": "node scripts/generate-typeface.mjs",
+    "assets": "node scripts/prepare-assets.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.8",
@@ -34,6 +35,7 @@
     "@types/react-dom": "^19.2.5",
     "@types/three": "^0.185.4",
     "opentype.js": "^2.0.0",
+    "sharp": "^0.35.4",
     "typescript": "^7.0.2"
   },
   "main": "src/index.ts"

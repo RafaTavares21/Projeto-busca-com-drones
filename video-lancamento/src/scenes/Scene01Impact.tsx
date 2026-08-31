@@ -1,13 +1,12 @@
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { Background } from '../components/Background';
 import { FilmTreatment } from '../components/FilmTreatment';
-import { MotionBlur } from '../components/MotionBlur';
-import { RedBrushStroke } from '../components/RedBrushStroke';
-import { HudOverlay } from '../components/HudOverlay';
+import { TextOverlay } from '../components/TextOverlay';
 import { CameraRig } from '../three/CameraRig';
 import { Glow } from '../three/Glow';
 import { Lighting } from '../three/Lighting';
 import { Particles } from '../three/Particles';
+import { RedHandTransition, handCoverage } from '../three/RedHandTransition';
 import { Stage } from '../three/Stage';
 import { Typography3D } from '../three/Typography3D';
 import { BASE_Z } from '../three/stageConfig';
@@ -21,123 +20,133 @@ const B = BEATS.impact;
 /**
  * CENA 01 — IMPACT (0s a 2.5s)
  *
- * Abre em preto real. Uma pincelada vermelha rasga a tela, a camera e
- * chicoteada na direcao contraria e a poeira do gesto fica em suspensao.
- * NEVER entao vem do fundo do espaco e passa rente a lente.
+ * Sete frames de preto real. Sem esse silencio o gesto seguinte nao tem de
+ * onde vir — impacto e uma relacao, nao um valor absoluto.
  *
- * A sensacao de escala nao vem de escalar o texto: vem de mover a geometria em
- * profundidade a velocidade constante e deixar a perspectiva fazer o trabalho.
- * O que a camera ve e um objeto de trinta metros passando a um metro dela.
+ * Entao a mao vermelha rasga o quadro. Ela nao e um efeito: e o elemento
+ * grafico da propria peca, e e o gesto dela que carrega a camera junto. EOG
+ * chega na esteira da mao; DRIP vem depois, em outra escala e outra
+ * profundidade, e passa rente a lente.
+ *
+ * A sensacao de escala nao vem de escalar o texto: vem de mover a geometria
+ * em profundidade a velocidade constante e deixar a perspectiva trabalhar.
  */
 export const Scene01Impact: React.FC = () => {
   const frame = useCurrentFrame();
 
-  // --- Pincelada -----------------------------------------------------------
-  const sweep = progress(frame, B.brushSweep[0], B.brushSweep[1], EASE.power4Out);
-  // Ela permanece em cena, mas recua para o fundo quando a tipografia chega.
-  const brushOpacity = inOut(frame, [B.brushSweep[0], B.brushSweep[0] + 3, 46, 66], EASE.linear, EASE.power2Out);
-  // O borrao existe apenas enquanto o gesto acontece.
-  const brushBlur = 1 - progress(frame, B.brushSweep[0] + 2, B.brushSweep[1], EASE.power2Out);
-
   // --- Camera --------------------------------------------------------------
-  // Chicote: a camera e arrancada para o lado no impacto e volta ao eixo.
+  // A camera e arrancada pelo gesto e volta ao eixo. Nao e trepidacao: e um
+  // deslocamento com direcao, que decai.
   const whip = 1 - progress(frame, B.cameraWhip[0], B.cameraWhip[1], EASE.power4Out);
-  const shake = whip * 26;
-  const cameraX = whip * 150;
+  const cameraX = whip * 190;
+  const cameraY = whip * -54;
 
-  // --- Tipografia ----------------------------------------------------------
-  // Velocidade constante em Z. A aceleracao aparente e puramente perspectiva.
-  const z = range(frame, [B.typeApproach[0], B.typeApproach[1]], [-3200, BASE_Z + 900]);
-  const typeOpacity = inOut(frame, [B.typeApproach[0], B.typeApproach[0] + 8, B.typePassBy, B.typePassBy + 6]);
+  // --- Mao -----------------------------------------------------------------
+  const slash = handCoverage(frame, B.handSlash, 'slash');
 
-  // O borrao da tipografia so entra na aproximacao final.
-  const typeBlur = progress(frame, 44, B.typePassBy, EASE.power2In);
+  // --- EOG -----------------------------------------------------------------
+  // Chega quase instantaneamente e assenta. A palavra curta pede impacto seco.
+  const eog = progress(frame, B.eogIn[0], B.eogIn[1], EASE.impact);
+  const eogZ = range(eog, [0, 1], [-2600, -120]);
+  const eogOpacity = inOut(frame, [B.eogIn[0], B.eogIn[0] + 4, B.dripIn[0] + 10, B.dripIn[0] + 22]);
 
-  // A rim vermelha cresce conforme o texto se aproxima e estoura na passagem.
-  const rim = progress(frame, B.rimPeak[0], B.rimPeak[1], EASE.power3Out);
-  const passFlash = pulse(frame, B.typePassBy - 6, B.typePassBy + 8, 0.55);
+  // --- DRIP ----------------------------------------------------------------
+  // Velocidade constante em Z, atravessando o plano da camera. A aceleracao
+  // aparente e puramente perspectiva.
+  const dripZ = range(frame, [B.dripIn[0], B.dripIn[1]], [-1900, BASE_Z + 700]);
+  const dripOpacity = inOut(frame, [B.dripIn[0], B.dripIn[0] + 5, B.dripPass, B.dripPass + 5]);
+  const dripBlur = progress(frame, B.dripIn[0] + 8, B.dripPass, EASE.power2In);
 
-  // --- Saida ---------------------------------------------------------------
+  const pass = pulse(frame, B.dripPass - 8, B.dripPass + 8, 0.5);
+  const heat = Math.max(slash * 0.8, pass);
+
   const exit = 1 - progress(frame, B.exit[0], B.exit[1], EASE.power2In);
-
-  const hudReveal = inOut(frame, [10, 22, 58, 68]);
+  const meta = inOut(frame, [26, 38, 58, 68]);
 
   return (
     <AbsoluteFill style={{ backgroundColor: COLORS.black, opacity: exit }}>
-      <Background pool={0.35 + rim * 0.4} redWash={rim * 0.7 + passFlash * 0.5} grunge={0.5} parallax={-30} />
+      <Background pool={0.2 + heat * 0.5} redWash={heat * 0.9} grunge={0.5} parallax={-34} />
 
-      <MotionBlur amount={brushBlur} layers={7} lagInFrames={1}>
-        <RedBrushStroke progress={sweep} opacity={brushOpacity} />
-      </MotionBlur>
-
-      <Stage exposure={1.05} redBounce={0.6 + rim * 0.7}>
+      <Stage exposure={1.05} redBounce={0.6 + heat * 0.8}>
         <CameraRig
-          position={[cameraX, 0, BASE_Z]}
-          shake={shake}
-          handheld={7}
-          roll={whip * 0.06}
+          position={[cameraX, cameraY, BASE_Z]}
+          shake={whip * 18}
+          handheld={6}
+          roll={whip * 0.07}
           seed="impact"
         />
-        <Lighting
-          key={2.4}
-          fill={0.14}
-          rim={1.2 + rim * 7}
-          rimPosition={[-520, 220, -900]}
-          top={0.8}
-          ambient={0.05}
-        />
+        <Lighting key={2.6} fill={0.14} rim={1.4 + heat * 7} rimPosition={[-560, 200, -880]} top={0.9} ambient={0.05} />
 
-        {/* Fragmentos lancados pela pincelada, viajando na mesma diagonal. */}
+        {/* Fragmentos apenas na esteira do gesto, e so enquanto ele acontece. */}
         <Particles
-          count={22}
-          radius={1150}
-          depth={2400}
-          size={9}
+          count={20}
+          radius={1100}
+          depth={2200}
+          size={8}
           shard
           color={COLORS.red}
-          drift={[420, 210, 120]}
-          opacity={0.34 * brushOpacity}
-          startFrame={B.debrisBurst[0]}
-          seed="debris-red"
+          drift={[520, 240, 140]}
+          opacity={0.34 * slash}
+          startFrame={B.debris[0]}
+          seed="slash-debris"
         />
         <Particles
-          count={38}
+          count={30}
           radius={1300}
-          depth={2800}
-          size={4}
+          depth={2600}
+          size={3.5}
           color={COLORS.bone}
-          drift={[180, 60, 90]}
-          opacity={0.16}
-          startFrame={B.debrisBurst[0]}
-          seed="debris-dust"
+          drift={[210, 70, 90]}
+          opacity={0.14 * inOut(frame, [B.debris[0], B.debris[0] + 6, B.debris[1] - 8, B.debris[1]])}
+          startFrame={B.debris[0]}
+          seed="slash-dust"
         />
 
-        <Glow position={[0, 40, -700]} size={2400} color={COLORS.redHot} intensity={rim * 0.32 + passFlash * 0.4} />
+        <Glow position={[0, 0, -800]} size={2600} color={COLORS.redHot} intensity={heat * 0.34} />
 
         <Typography3D
-          text="NEVER"
-          size={420}
-          depth={150}
-          position={[0, 0, z]}
-          rotation={[0, 0.07, -0.012]}
-          opacity={typeOpacity}
+          text="EOG"
+          size={430}
+          depth={160}
+          position={[0, 40, eogZ]}
+          rotation={[0, 0.05, 0]}
+          opacity={eogOpacity}
           faceColor={COLORS.white}
-          sideColor="#0F0F0F"
-          ghosts={typeBlur > 0.05 ? 5 : 0}
-          ghostOffset={[0, 0, -320]}
-          ghostOpacity={0.1 * typeBlur}
+          sideColor="#0E0E0E"
+        />
+
+        <Typography3D
+          text="DRIP"
+          size={330}
+          depth={190}
+          position={[0, -60, dripZ]}
+          rotation={[0, -0.04, 0.01]}
+          opacity={dripOpacity}
+          faceColor={COLORS.white}
+          sideColor={COLORS.redDeep}
+          ghosts={dripBlur > 0.05 ? 5 : 0}
+          ghostOffset={[0, 0, -340]}
+          ghostOpacity={0.1 * dripBlur}
+        />
+
+        {/* A mao passa em primeiro plano, na frente de tudo. */}
+        <RedHandTransition
+          frame={frame}
+          window={B.handSlash}
+          from="right"
+          coverage={1.15}
+          tilt={-18}
+          z={1400}
+          motion="slash"
         />
       </Stage>
 
-      <HudOverlay
-        top={[
-          { text: 'Never Broke Again', reveal: hudReveal },
-          { text: 'Drop 01', reveal: hudReveal, align: 'right' },
-        ]}
-        marks={hudReveal * 0.8}
+      <TextOverlay
+        topLeft={{ text: 'EOG DRIP', reveal: meta }}
+        topRight={{ text: 'Drop 01', reveal: meta }}
       />
 
-      <FilmTreatment vignette={0.95} />
+      <FilmTreatment vignette={0.92} />
     </AbsoluteFill>
   );
 };

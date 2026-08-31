@@ -1,55 +1,61 @@
 /**
- * Direcao de arte — NEVER BROKE AGAIN / DROP 01.
+ * Direcao de arte — EOG DRIP / DROP 01.
  *
- * A paleta e deliberadamente curta: preto, branco e um unico vermelho.
- * Qualquer cor fora daqui e um erro de direcao de arte, nao uma escolha.
+ * A paleta e deliberadamente curta: preto, branco e um unico vermelho — o
+ * mesmo vermelho das maos da estampa. Qualquer cor fora daqui e um erro de
+ * direcao de arte, nao uma escolha.
  */
 
+export const BRAND = {
+  name: 'EOG DRIP',
+  words: ['EOG', 'DRIP'] as const,
+  drop: 'DROP 01',
+  status: 'COMING SOON',
+} as const;
+
 export const COLORS = {
-  /** Fundo absoluto. O preto do comercial e preto real, nao cinza escuro. */
+  /** Fundo absoluto. O preto da campanha e preto real, nao cinza escuro. */
   black: '#000000',
   /** Preto de cena — quase imperceptivelmente elevado, da corpo as sombras. */
   ink: '#050505',
-  /** Preto de material, para superficies que precisam receber luz. */
-  charcoal: '#0C0C0C',
 
   /** Branco puro, reservado para tipografia de impacto. */
   white: '#FFFFFF',
-  /** Branco editorial levemente quente — usado em textos longos e HUD. */
-  bone: '#EDE9E3',
-  /** Cinza de suporte para metadados e HUD secundario. */
-  ash: '#6E6E6E',
+  /** Branco levemente quente — textos longos e informacao secundaria. */
+  bone: '#EFECE7',
+  /** Cinza de suporte. */
+  ash: '#8A8A8A',
   ashDim: '#3A3A3A',
 
-  /** O vermelho da marca. Saturado, sem rosa, sem laranja. */
-  red: '#E10600',
+  /** O vermelho das maos, amostrado da propria estampa. */
+  red: '#C81208',
   /** Vermelho de brilho — luzes, flashes, emissivos. */
   redHot: '#FF2A17',
   /** Vermelho de sombra — laterais extrudadas, degrades. */
-  redDeep: '#7A0400',
+  redDeep: '#6E0400',
 } as const;
 
-/** Escala tipografica em px, pensada para o canvas de 1080x1920. */
+/** Escala tipografica em px, pensada para o quadro de 1080x1920. */
 export const TYPE = {
-  hero: 340,
-  display: 210,
-  title: 132,
-  subtitle: 84,
-  body: 46,
-  label: 30,
-  micro: 22,
+  hero: 330,
+  display: 218,
+  title: 128,
+  subtitle: 76,
+  body: 42,
+  label: 28,
+  micro: 21,
 } as const;
 
 export const TRACKING = {
-  tight: '-0.04em',
+  tight: '-0.045em',
   normal: '0em',
-  wide: '0.14em',
-  wider: '0.32em',
-  widest: '0.52em',
+  wide: '0.12em',
+  wider: '0.28em',
+  widest: '0.46em',
 } as const;
 
-/** Margem de seguranca lateral — mantem a composicao editorial, nao centralizada por acaso. */
-export const GUTTER = 88;
+/** Margem de seguranca lateral — mantem a composicao editorial. */
+export const GUTTER = 84;
 
 export const FONTS = {
   display: '"Anton", "Arial Narrow", sans-serif',
